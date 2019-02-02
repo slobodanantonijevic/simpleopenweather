@@ -1,7 +1,7 @@
 # SimpleOpenWeather
 Simple Weather App that I have built for the purpose of showing the students on a local course the relatively basic usage of ConstraintLayout, RecyclerView, Scalable Vector Drawables, Fragments, Retrofit, RxJava, Dagger2 & Architectual Components (ViewModel, LiveData and Room).
 
-The app uses free account of [OpenWeatherMap API](https://openweathermap.org/api){:target="_blank" rel="noopener"}
+The app uses free account of ![OpenWeatherMap API](https://openweathermap.org/api)
 
 The app is still a work in progress.
 

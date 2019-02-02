@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Simple Open Weather</string>
+    <string name="title_hourly_forecast">Hourly</string>
+    <string name="title_daily_forecast">Daily</string>
+</resources>

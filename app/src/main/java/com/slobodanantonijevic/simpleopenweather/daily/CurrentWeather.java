@@ -1,7 +1,11 @@
-package com.slobodanantonijevic.simpleopenweather.model;
+package com.slobodanantonijevic.simpleopenweather.daily;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
+import com.slobodanantonijevic.simpleopenweather.general.MainWeatherData;
+import com.slobodanantonijevic.simpleopenweather.general.Weather;
+import com.slobodanantonijevic.simpleopenweather.general.Wind;
 
 import java.util.List;
 
@@ -21,10 +25,6 @@ public class CurrentWeather {
     @Expose
     private Wind wind;
 
-    @SerializedName("dt")
-    @Expose
-    private int date;
-
     @SerializedName("id")
     @Expose
     private int id;
@@ -32,6 +32,13 @@ public class CurrentWeather {
     @SerializedName("name")
     @Expose
     private String cityName;
+
+    @SerializedName("dt")
+    @Expose
+    private int unixDate;
+
+    private String date; // Format L dd
+    private String weekDay;
 
     public List<Weather> getWeather() {
 
@@ -63,16 +70,6 @@ public class CurrentWeather {
         this.wind = wind;
     }
 
-    public int getDate() {
-
-        return date;
-    }
-
-    public void setDate(int date) {
-
-        this.date = date;
-    }
-
     public int getId() {
 
         return id;
@@ -91,5 +88,36 @@ public class CurrentWeather {
     public void setCityName(String cityName) {
 
         this.cityName = cityName;
+    }
+
+    public int getUnixDate() {
+
+        return unixDate;
+    }
+
+    public void setUnixDate(int unixDate) {
+
+        HelpStuff.date(unixDate);
+        this.unixDate = unixDate;
+    }
+
+    public String getWeekDay() {
+
+        return weekDay;
+    }
+
+    public void setWeekDay(String weekDay) {
+
+        this.weekDay = weekDay;
+    }
+
+    public String getDate() {
+
+        return date;
+    }
+
+    public void setDate(String date) {
+
+        this.date = date;
     }
 }

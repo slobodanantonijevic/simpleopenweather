@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackgroundMain">
@@ -10,12 +9,12 @@
         android:id="@+id/include"
         layout="@layout/template_current_weather"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="@dimen/basic_margin"
         android:layout_marginLeft="@dimen/basic_margin"
         android:layout_marginTop="@dimen/basic_margin"
-        android:layout_marginEnd="@dimen/basic_margin"
-        android:layout_marginRight="@dimen/basic_margin"
+        android:layout_marginEnd="@dimen/basic_margin_half"
+        android:layout_marginRight="@dimen/basic_margin_half"
         android:layout_marginBottom="@dimen/basic_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -23,11 +22,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/forecastHolder"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/basic_margin"
-        android:layout_marginLeft="@dimen/basic_margin"
-        android:layout_marginTop="@dimen/basic_margin"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/basic_margin_half"
+        android:layout_marginLeft="@dimen/basic_margin_half"
+        android:layout_marginBottom="@dimen/basic_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent" />

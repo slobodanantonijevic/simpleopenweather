@@ -1,13 +1,18 @@
-package com.slobodanantonijevic.simpleopenweather.model;
+package com.slobodanantonijevic.simpleopenweather.daily;
+
+import android.util.Log;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.slobodanantonijevic.simpleopenweather.R;
+import com.slobodanantonijevic.simpleopenweather.general.Weather;
 
 import java.util.List;
+import java.util.Locale;
 
 public class DayForecast {
 
-    @SerializedName("date")
+    @SerializedName("dt")
     @Expose
     private int date;
 

@@ -1,19 +1,19 @@
-package com.slobodanantonijevic.simpleopenweather.model;
+package com.slobodanantonijevic.simpleopenweather.daily;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Temperature {
 
-    @SerializedName("dayTemp")
+    @SerializedName("day")
     @Expose
     private double dayTemp;
 
-    @SerializedName("minTemp")
+    @SerializedName("min")
     @Expose
     private double minTemp;
 
-    @SerializedName("maxTemp")
+    @SerializedName("max")
     @Expose
     private double maxTemp;
 

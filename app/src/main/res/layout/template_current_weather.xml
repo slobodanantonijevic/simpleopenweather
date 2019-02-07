@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -9,11 +9,6 @@
         android:id="@+id/topViewBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/basic_margin"
-        android:layout_marginLeft="@dimen/basic_margin"
-        android:layout_marginTop="@dimen/basic_margin"
-        android:layout_marginEnd="@dimen/basic_margin"
-        android:layout_marginRight="@dimen/basic_margin"
         android:background="@color/colorBackgroundDate"
         app:layout_constraintBottom_toBottomOf="@id/date"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +23,6 @@
         android:layout_marginLeft="@dimen/basic_margin"
         android:layout_marginTop="@dimen/basic_margin"
         android:layout_marginBottom="@dimen/basic_margin"
-        android:text="January 30th"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/date_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
@@ -37,14 +31,13 @@
         app:layout_constraintTop_toTopOf="@id/topViewBackground" />
 
     <com.slobodanantonijevic.widget.CustomTextView
-        android:id="@+id/dayTemp"
+        android:id="@+id/day"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/basic_margin"
         android:layout_marginEnd="@dimen/basic_margin"
         android:layout_marginRight="@dimen/basic_margin_double"
         android:layout_marginBottom="@dimen/basic_margin"
-        android:text="Wednesday"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/date_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
@@ -56,11 +49,6 @@
         android:id="@+id/weatherCellBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/basic_margin"
-        android:layout_marginLeft="@dimen/basic_margin"
-        android:layout_marginEnd="@dimen/basic_margin"
-        android:layout_marginRight="@dimen/basic_margin"
-        android:layout_marginBottom="@dimen/basic_margin"
         android:background="@color/colorBackgroundCell"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,14 +58,16 @@
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/weatherIcon"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/basic_margin_double"
-        android:layout_marginEnd="@dimen/basic_margin_double"
-        android:layout_marginRight="@dimen/basic_margin_double"
-        android:layout_marginBottom="@dimen/basic_margin_triple"
-        app:layout_constraintBottom_toTopOf="@id/maxTempIcon"
-        app:layout_constraintDimensionRatio="1:1"
+        android:layout_height="133dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/maxTempIcon"
         app:layout_constraintEnd_toEndOf="@+id/weatherCellBackground"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="@+id/weatherCellBackground"
         app:srcCompat="@drawable/clear_day" />
 
@@ -85,40 +75,42 @@
         android:id="@+id/city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/basic_margin_double"
-        android:layout_marginLeft="@dimen/basic_margin_double"
-        android:text="AwesomeCity"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/city_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
-        app:layout_constraintStart_toStartOf="@+id/weatherCellBackground"
-        app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
+        app:layout_constraintStart_toStartOf="@+id/currentTemperature"
+        app:layout_constraintTop_toTopOf="@+id/weatherCellBackground" />
 
     <com.slobodanantonijevic.widget.CustomTextView
         android:id="@+id/currentTemperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/basic_margin_double"
-        android:text="20°"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/temp_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
-        app:layout_constraintStart_toStartOf="@+id/city"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/weatherCellBackground"
         app:layout_constraintTop_toBottomOf="@+id/city" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/windIcon"
         android:layout_width="@dimen/other_conditions_icon_size"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/basic_margin_double"
-        android:layout_marginLeft="@dimen/basic_margin_double"
-        android:layout_marginTop="@dimen/basic_margin_double"
+        android:layout_marginTop="@dimen/basic_margin"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="@id/weatherCellBackground"
+        app:layout_constraintStart_toStartOf="@+id/currentTemperature"
         app:layout_constraintTop_toBottomOf="@id/currentTemperature"
         app:srcCompat="@drawable/ic_wind" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/minTempIcon"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -130,7 +122,7 @@
         app:layout_constraintTop_toTopOf="@+id/humidityIcon"
         app:srcCompat="@drawable/min_temp" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/maxTempIcon"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -141,7 +133,7 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/max_temp" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/unitsType"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -156,7 +148,7 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/celsius" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/pressureIcon"
         android:layout_width="@dimen/other_conditions_icon_size"
         android:layout_height="0dp"
@@ -166,7 +158,7 @@
         app:layout_constraintTop_toBottomOf="@+id/windIcon"
         app:srcCompat="@drawable/ic_pressure" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/humidityIcon"
         android:layout_width="@dimen/other_conditions_icon_size"
         android:layout_height="0dp"
@@ -184,7 +176,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/basic_margin"
         android:layout_marginLeft="@dimen/basic_margin"
-        android:text="34 m/s"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/other_conditions_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
@@ -198,7 +189,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/basic_margin"
         android:layout_marginLeft="@dimen/basic_margin"
-        android:text="1220 MB"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/other_conditions_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
@@ -210,9 +200,8 @@
         android:id="@+id/maxTemp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/basic_margin"
-        android:layout_marginLeft="@dimen/basic_margin"
-        android:text="21°"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/min_max_temp_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
@@ -226,7 +215,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/basic_margin"
         android:layout_marginLeft="@dimen/basic_margin"
-        android:text="12°"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/min_max_temp_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
@@ -236,18 +224,24 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <com.slobodanantonijevic.widget.CustomTextView
-        android:id="@+id/pressure2"
+        android:id="@+id/humidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/basic_margin"
         android:layout_marginLeft="@dimen/basic_margin"
         android:layout_marginBottom="@dimen/basic_margin"
-        android:text="50 %"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/other_conditions_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/humidityIcon"
         app:layout_constraintTop_toTopOf="@+id/humidityIcon" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50121653" />
 
 </android.support.constraint.ConstraintLayout>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -9,11 +9,7 @@
         android:id="@+id/weatherCellBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/basic_margin"
-        android:layout_marginLeft="@dimen/basic_margin"
         android:layout_marginTop="@dimen/basic_margin"
-        android:layout_marginEnd="@dimen/basic_margin"
-        android:layout_marginRight="@dimen/basic_margin"
         android:background="@color/colorBackgroundCell"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,50 +17,53 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.slobodanantonijevic.widget.CustomTextView
-        android:id="@+id/dayTemp"
-        android:layout_width="wrap_content"
+        android:id="@+id/day"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/basic_margin"
-        android:layout_marginLeft="@dimen/basic_margin"
-        android:layout_marginTop="@dimen/basic_margin"
-        android:layout_marginBottom="@dimen/basic_margin"
-        android:text="Wednesday"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/other_days_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
-        app:layout_constraintEnd_toStartOf="@+id/weatherIcon"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toEndOf="@+id/weatherCellBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/weatherCellBackground"
-        app:layout_constraintTop_toTopOf="@+id/weatherCellBackground"
-        app:layout_constraintBottom_toBottomOf="@+id/weatherCellBackground" />
+        app:layout_constraintTop_toTopOf="@+id/weatherCellBackground" />
 
     <com.slobodanantonijevic.widget.CustomTextView
         android:id="@+id/temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/basic_margin"
-        android:layout_marginEnd="@dimen/basic_margin"
-        android:layout_marginRight="@dimen/basic_margin"
-        android:layout_marginBottom="@dimen/basic_margin"
-        android:text="20°"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:textAlignment="center"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/other_days_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
+        app:layout_constraintBottom_toBottomOf="@+id/weatherIcon"
         app:layout_constraintEnd_toEndOf="@+id/weatherCellBackground"
-        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-        app:layout_constraintTop_toTopOf="@+id/weatherCellBackground" />
+        app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/weatherIcon"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/basic_margin"
-        app:layout_constraintBottom_toBottomOf="@+id/dayTemp"
-        app:layout_constraintEnd_toStartOf="@+id/temp"
-        app:layout_constraintStart_toEndOf="@+id/dayTemp"
-        app:layout_constraintTop_toTopOf="@+id/temp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/day"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/day"
         app:srcCompat="@drawable/clear_day" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8" />
 
 
 </android.support.constraint.ConstraintLayout>

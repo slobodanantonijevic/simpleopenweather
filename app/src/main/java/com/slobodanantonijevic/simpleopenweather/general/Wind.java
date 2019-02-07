@@ -1,4 +1,4 @@
-package com.slobodanantonijevic.simpleopenweather.model;
+package com.slobodanantonijevic.simpleopenweather.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

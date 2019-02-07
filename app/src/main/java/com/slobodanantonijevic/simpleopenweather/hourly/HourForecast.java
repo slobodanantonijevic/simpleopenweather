@@ -1,7 +1,10 @@
-package com.slobodanantonijevic.simpleopenweather.model;
+package com.slobodanantonijevic.simpleopenweather.hourly;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.slobodanantonijevic.simpleopenweather.general.MainWeatherData;
+import com.slobodanantonijevic.simpleopenweather.general.Weather;
+import com.slobodanantonijevic.simpleopenweather.general.Wind;
 
 import java.util.List;
 

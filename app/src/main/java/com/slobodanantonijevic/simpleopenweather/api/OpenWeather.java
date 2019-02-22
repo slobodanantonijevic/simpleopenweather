@@ -6,7 +6,10 @@ package com.slobodanantonijevic.simpleopenweather.api;
  */
 
 import javax.inject.Singleton;
+
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Singleton
@@ -31,9 +34,14 @@ public class OpenWeather {
                 instance = retrofit;
                 if (instance == null) { // Extra safety
 
+                    /*
+                     * In order to use RetroFit with RxJava we need to add RxJava2CallAdapterFactory
+                     * Also in order to make network calls asynchronous we need to create it with Schedulers.io()
+                     */
                     retrofit = instance = new Retrofit.Builder()
                             .baseUrl(BASE_URL)
                             .addConverterFactory(GsonConverterFactory.create())
+                            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                             .build();
                 }
             }

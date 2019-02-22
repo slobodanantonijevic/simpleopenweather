@@ -1,10 +1,9 @@
-package com.slobodanantonijevic.simpleopenweather.daily;
+package com.slobodanantonijevic.simpleopenweather.hourly;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +17,16 @@ import java.util.List;
 
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
 
-    private List<DayForecast> forecast;
+    private List<HourForecast> forecast;
     private Context context;
 
-    public ForecastAdapter(List<DayForecast> forecast, Context context) {
+    public ForecastAdapter(List<HourForecast> forecast, Context context) {
 
         this.forecast = forecast;
         this.context = context;
     }
 
-    public void update(List<DayForecast> forecast) {
+    public void update(List<HourForecast> forecast) {
 
         this.forecast = forecast;
     }
@@ -46,31 +45,41 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
     public void onBindViewHolder(@NonNull ForecastViewHolder viewHolder, int i) {
 
         // We never want the first one since we have today's weather already
-        DayForecast dayForecast = forecast.get(i + 1);
+        HourForecast hourForecast = forecast.get(i);
 
-        String day = HelpStuff.weekDay(dayForecast.getDate());
+        int unixTimeStamp = hourForecast.getDate();
+        if (i == 0 || HelpStuff.hourByUtc(unixTimeStamp).equals("00")) {
+
+            viewHolder.date.setVisibility(View.VISIBLE);
+            String date = HelpStuff.time(unixTimeStamp, "LLL dd");
+            viewHolder.date.setText(date);
+        } else if (viewHolder.date.getVisibility() == View.VISIBLE) {
+
+            viewHolder.date.setVisibility(View.GONE);
+        }
+        String day = HelpStuff.time(unixTimeStamp, "h a");
         viewHolder.day.setText(day);
 
         // We don't really need decimal precision on a weather app
-        String temp = HelpStuff.roundTheTemp(dayForecast.getTemp().getDayTemp());
+        String temp = HelpStuff.roundTheTempDecimal(hourForecast.getConditions().getTemp());
         viewHolder.temp.setText(temp.concat(Weather.TEMPERATURE));
 
-        int weatherId = dayForecast.getWeather().get(0).getId();
+        int weatherId = hourForecast.getWeather().get(0).getId();
         int icon = Weather.findWeatherIcon(weatherId);
         if (icon != 0) {
 
             viewHolder.icon.setImageDrawable(ContextCompat.getDrawable(context, icon));
         }
 
-        temp = HelpStuff.roundTheTemp(dayForecast.getTemp().getMinTemp());
+        temp = HelpStuff.roundTheTempDecimal(hourForecast.getConditions().getTempMin());
         viewHolder.minTemp.setText(temp.concat(Weather.TEMPERATURE));
 
-        temp = HelpStuff.roundTheTemp(dayForecast.getTemp().getMaxTemp());
+        temp = HelpStuff.roundTheTempDecimal(hourForecast.getConditions().getTempMax());
         viewHolder.maxTemp.setText(temp.concat(Weather.TEMPERATURE));
 
-        viewHolder.pressure.setText(Double.toString(dayForecast.getPressure()).concat(Weather.PRESSURE));
-        viewHolder.humidity.setText(Double.toString(dayForecast.getHumidity()).concat(Weather.HUMIDITY));
-        viewHolder.wind.setText(Double.toString(dayForecast.getSpeed()).concat(Weather.WIND));
+        viewHolder.pressure.setText(Double.toString(hourForecast.getConditions().getPressure()).concat(Weather.PRESSURE));
+        viewHolder.humidity.setText(Double.toString(hourForecast.getConditions().getHumidity()).concat(Weather.HUMIDITY));
+        viewHolder.wind.setText(Double.toString(hourForecast.getWind().getSpeed()).concat(Weather.WIND));
     }
 
     /**
@@ -81,7 +90,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
     @Override
     public int getItemCount() {
 
-        //Log.wtf("THIS WORKS", (forecast.size() - 1) + "");
-        return forecast.size() - 1; // We already have today's weather in main container
+        return forecast.size();
     }
 }

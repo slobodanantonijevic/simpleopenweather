@@ -10,13 +10,14 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/colorBackgroundDate"
-        app:layout_constraintBottom_toBottomOf="@id/date"
+        app:layout_constraintBottom_toBottomOf="@id/city"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.slobodanantonijevic.widget.CustomTextView
-        android:id="@+id/date"
+        android:id="@+id/city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/basic_margin"
@@ -31,7 +32,7 @@
         app:layout_constraintTop_toTopOf="@id/topViewBackground" />
 
     <com.slobodanantonijevic.widget.CustomTextView
-        android:id="@+id/day"
+        android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/basic_margin"
@@ -59,12 +60,12 @@
         android:id="@+id/weatherIcon"
         android:layout_width="0dp"
         android:layout_height="133dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/basic_margin"
+        android:layout_marginLeft="@dimen/basic_margin"
+        android:layout_marginTop="@dimen/basic_margin"
+        android:layout_marginEnd="@dimen/basic_margin"
+        android:layout_marginRight="@dimen/basic_margin"
+        android:layout_marginBottom="@dimen/basic_margin"
         app:layout_constraintBottom_toTopOf="@+id/maxTempIcon"
         app:layout_constraintEnd_toEndOf="@+id/weatherCellBackground"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
@@ -72,31 +73,19 @@
         app:srcCompat="@drawable/clear_day" />
 
     <com.slobodanantonijevic.widget.CustomTextView
-        android:id="@+id/city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/colorPrimary"
-        android:textSize="@dimen/city_text_size"
-        app:fontTypeFaceAsset="Prime-Regular.otf"
-        app:layout_constraintStart_toStartOf="@+id/currentTemperature"
-        app:layout_constraintTop_toTopOf="@+id/weatherCellBackground" />
-
-    <com.slobodanantonijevic.widget.CustomTextView
         android:id="@+id/currentTemperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="@dimen/basic_margin"
+        android:layout_marginLeft="@dimen/basic_margin"
+        android:layout_marginTop="@dimen/basic_margin"
+        android:layout_marginEnd="@dimen/basic_margin"
+        android:layout_marginRight="@dimen/basic_margin"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/temp_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintHorizontal_bias="0.33"
         app:layout_constraintStart_toStartOf="@+id/weatherCellBackground"
         app:layout_constraintTop_toBottomOf="@+id/city" />
 
@@ -200,8 +189,8 @@
         android:id="@+id/maxTemp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="@dimen/basic_margin"
+        android:layout_marginLeft="@dimen/basic_margin"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/min_max_temp_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"

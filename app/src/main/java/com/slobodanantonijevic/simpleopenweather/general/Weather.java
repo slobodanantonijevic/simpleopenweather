@@ -12,7 +12,6 @@ public class Weather {
     public static final String WIND = " m/s";
     public static final String TEMPERATURE = "°";
 
-
     @SerializedName("id")
     @Expose
     private int id;

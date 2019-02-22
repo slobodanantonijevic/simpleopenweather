@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.slobodanantonijevic.widget.CustomTextView
+        android:id="@+id/date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/basic_margin"
+        android:layout_marginLeft="@dimen/basic_margin"
+        android:layout_marginTop="@dimen/basic_margin"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/other_days_text_size"
+        app:fontTypeFaceAsset="Prime-Regular.otf"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/weatherCellBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/basic_margin"
+        android:background="@color/colorBackgroundCell"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date" />
+
+    <com.slobodanantonijevic.widget.CustomTextView
+        android:id="@+id/day"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/basic_margin"
+        android:layout_marginLeft="@dimen/basic_margin"
+        android:layout_marginTop="@dimen/basic_margin"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/other_days_text_size"
+        app:fontTypeFaceAsset="Prime-Regular.otf"
+        app:layout_constraintStart_toStartOf="@+id/weatherCellBackground"
+        app:layout_constraintTop_toTopOf="@+id/weatherCellBackground" />
+
+    <com.slobodanantonijevic.widget.CustomTextView
+        android:id="@+id/temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/basic_margin"
+        android:layout_marginRight="@dimen/basic_margin"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/other_days_text_size"
+        app:fontTypeFaceAsset="Prime-Regular.otf"
+        app:layout_constraintBottom_toBottomOf="@+id/day"
+        app:layout_constraintEnd_toEndOf="@+id/weatherCellBackground"
+        app:layout_constraintTop_toTopOf="@+id/day" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/weatherIcon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/basic_margin"
+        android:layout_marginRight="@dimen/basic_margin"
+        app:layout_constraintBottom_toBottomOf="@+id/day"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/day"
+        app:srcCompat="@drawable/clear_day" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <View
+        android:id="@+id/borderView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/basic_margin"
+        app:layout_constraintTop_toBottomOf="@+id/day"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:visibility="gone"
+        android:id="@+id/additionalData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/borderView">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/maxTempIcon"
+            android:layout_width="@dimen/other_conditions_icon_size"
+            android:layout_height="@dimen/other_conditions_icon_size"
+            android:layout_marginTop="@dimen/basic_margin"
+            app:layout_constraintStart_toEndOf="@+id/wind"
+            app:layout_constraintTop_toBottomOf="@+id/pressureIcon"
+            app:srcCompat="@drawable/max_temp" />
+
+        <com.slobodanantonijevic.widget.CustomTextView
+            android:id="@+id/maxTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/basic_margin"
+            android:layout_marginLeft="@dimen/basic_margin"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/other_conditions_text_size"
+            app:fontTypeFaceAsset="Prime-Regular.otf"
+            app:layout_constraintBottom_toBottomOf="@+id/maxTempIcon"
+            app:layout_constraintStart_toEndOf="@+id/maxTempIcon"
+            app:layout_constraintTop_toTopOf="@+id/maxTempIcon" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/minTempIcon"
+            android:layout_width="@dimen/other_conditions_icon_size"
+            android:layout_height="@dimen/other_conditions_icon_size"
+            android:layout_marginTop="@dimen/basic_margin"
+            android:layout_marginBottom="@dimen/basic_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/windIcon"
+            app:layout_constraintTop_toBottomOf="@+id/windIcon"
+            app:srcCompat="@drawable/min_temp" />
+
+        <com.slobodanantonijevic.widget.CustomTextView
+            android:id="@+id/minTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/basic_margin"
+            android:layout_marginLeft="@dimen/basic_margin"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/other_conditions_text_size"
+            app:fontTypeFaceAsset="Prime-Regular.otf"
+            app:layout_constraintBottom_toBottomOf="@+id/minTempIcon"
+            app:layout_constraintStart_toEndOf="@+id/minTempIcon"
+            app:layout_constraintTop_toTopOf="@+id/minTempIcon" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/humidityIcon"
+            android:layout_width="@dimen/other_conditions_icon_size"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/pressureIcon"
+            app:layout_constraintEnd_toStartOf="@+id/humidity"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/pressure"
+            app:layout_constraintTop_toTopOf="@+id/pressureIcon"
+            app:srcCompat="@drawable/ic_humidity" />
+
+        <com.slobodanantonijevic.widget.CustomTextView
+            android:id="@+id/humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/basic_margin"
+            android:layout_marginRight="@dimen/basic_margin"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/other_conditions_text_size"
+            app:fontTypeFaceAsset="Prime-Regular.otf"
+            app:layout_constraintBottom_toBottomOf="@+id/humidityIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/humidityIcon"
+            app:layout_constraintTop_toTopOf="@+id/humidityIcon" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/pressureIcon"
+            android:layout_width="@dimen/other_conditions_icon_size"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/windIcon"
+            app:layout_constraintEnd_toStartOf="@+id/pressure"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/wind"
+            app:layout_constraintTop_toTopOf="@+id/windIcon"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/ic_pressure" />
+
+        <com.slobodanantonijevic.widget.CustomTextView
+            android:id="@+id/pressure"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/basic_margin"
+            android:layout_marginLeft="@dimen/basic_margin"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/other_conditions_text_size"
+            app:fontTypeFaceAsset="Prime-Regular.otf"
+            app:layout_constraintBottom_toBottomOf="@+id/windIcon"
+            app:layout_constraintEnd_toStartOf="@+id/humidityIcon"
+            app:layout_constraintStart_toEndOf="@+id/pressureIcon"
+            app:layout_constraintTop_toTopOf="@+id/windIcon" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/windIcon"
+            android:layout_width="@dimen/other_conditions_icon_size"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/basic_margin"
+            android:layout_marginLeft="@dimen/basic_margin"
+            android:layout_marginTop="@dimen/basic_margin"
+            app:layout_constraintEnd_toStartOf="@+id/wind"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_wind" />
+
+        <com.slobodanantonijevic.widget.CustomTextView
+            android:id="@+id/wind"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/basic_margin"
+            android:layout_marginLeft="@dimen/basic_margin"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/other_conditions_text_size"
+            app:fontTypeFaceAsset="Prime-Regular.otf"
+            app:layout_constraintBottom_toBottomOf="@+id/windIcon"
+            app:layout_constraintEnd_toStartOf="@+id/pressureIcon"
+            app:layout_constraintStart_toEndOf="@+id/windIcon"
+            app:layout_constraintTop_toTopOf="@+id/windIcon" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

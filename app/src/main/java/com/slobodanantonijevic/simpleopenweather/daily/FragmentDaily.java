@@ -1,40 +1,38 @@
 package com.slobodanantonijevic.simpleopenweather.daily;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import com.slobodanantonijevic.simpleopenweather.R;
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeather;
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
+import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.general.Weather;
 import com.slobodanantonijevic.widget.CustomTextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+public class FragmentDaily extends FragmentForecast {
 
-public class FragmentDaily extends Fragment {
+    public ForecastAdapter forecastAdapter;
 
     /**
      * Generally we did not have to put them as globals but since we'll add a refresh functionality
      * preventing multiple findViewById(s) (on each refresh), seems like a smart idea
      */
     private CustomTextView dateField;
-    private CustomTextView dayField;
     private CustomTextView cityField;
     private CustomTextView temperatureField;
     private CustomTextView pressureField;
@@ -43,10 +41,6 @@ public class FragmentDaily extends Fragment {
     private CustomTextView minTempField;
     private CustomTextView maxTempField;
     private AppCompatImageView weatherImage;
-
-    // Forecast fields & values
-    private List<DayForecast> daysForecast = new ArrayList<>();
-    private ForecastAdapter forecastAdapter;
 
     public FragmentDaily() {
 
@@ -57,28 +51,34 @@ public class FragmentDaily extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        findCurrentWeather();
-        findForecast();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_daily, container, false);
+        if (savedInstanceState == null) {
 
-        RecyclerView forecast = rootView.findViewById(R.id.forecastHolder);
+            savedInstanceState = new Bundle();
+        }
+        savedInstanceState.putInt(LAYOUT_KEY, R.layout.fragment_daily);
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
-        forecastAdapter = new ForecastAdapter(daysForecast, getContext());
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        forecast.setLayoutManager(layoutManager);
-        forecast.setItemAnimator(new DefaultItemAnimator());
-        forecast.setAdapter(forecastAdapter);
+        RecyclerView forecastHolder = rootView.findViewById(R.id.forecastHolder);
+        forecastAdapter = new ForecastAdapter(forecast, getContext());
+        forecastHolder.setAdapter(forecastAdapter);
 
         locateCurrentWeatherFields(rootView);
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        findCurrentWeather();
+        findForecast();
     }
 
     /**
@@ -88,7 +88,6 @@ public class FragmentDaily extends Fragment {
     private void locateCurrentWeatherFields(View rootView) {
 
         dateField = rootView.findViewById(R.id.date);
-        dayField = rootView.findViewById(R.id.day);
         cityField = rootView.findViewById(R.id.city);
         temperatureField = rootView.findViewById(R.id.currentTemperature);
         pressureField = rootView.findViewById(R.id.pressure);
@@ -106,29 +105,20 @@ public class FragmentDaily extends Fragment {
 
         OpenWeatherApi api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
 
-        Call<CurrentWeather> call = api.getCurrentWeather("London,UK");
+        Observable<CurrentWeather> call = api.getCurrentWeather("London,UK");
 
-        Log.wtf("URL_CALLED", call.request().url() + "");
+        Disposable current = call
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(currentWeather -> {
 
-        call.enqueue(new Callback<CurrentWeather>() {
+                    String date = HelpStuff
+                            .time(currentWeather.getUnixDate(), "EEE, LLL dd");
+                    currentWeather.setDate(date);
+                    displayCurrentWeather(currentWeather);
+                }, throwable -> handleRxError(throwable, "CURRENT WEATHER"));  // onError
 
-            @Override
-            public void onResponse(Call<CurrentWeather> call, Response<CurrentWeather> response) {
-
-                CurrentWeather weather = response.body();
-
-                weather.setWeekDay(HelpStuff.weekDay(weather.getUnixDate()));
-                weather.setDate(HelpStuff.date(weather.getUnixDate()));
-
-                displayCurrentWeather(weather);
-            }
-
-            @Override
-            public void onFailure(Call<CurrentWeather> call, Throwable t) {
-
-                Toast.makeText(getContext(), "A PROBLEM OCCURED BUDDY!!!", Toast.LENGTH_SHORT).show();
-            }
-        });
+        disposable.add(current);
     }
 
     /**
@@ -138,23 +128,23 @@ public class FragmentDaily extends Fragment {
 
         OpenWeatherApi api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
 
-        Call<Forecast> call = api.getForecast("London,UK");
+        Observable<Forecast> call = api.getForecast("London,UK");
 
-        call.enqueue(new Callback<Forecast>() {
+        Disposable forecast = call
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::displayForecast, // simple method reference
+                        throwable -> handleRxError(throwable, "DAILY WEATHER")); // onError
 
-            @Override
-            public void onResponse(Call<Forecast> call, Response<Forecast> response) {
+//                Subscribe could have been done with lambda too
+//                but no point to it as we only have a single method call
+//                and it is more elegant to use a simple method reference
+//                .subscribe(forecastWeather -> {
+//
+//                    displayForecast(forecastWeather);
+//                });
 
-                Forecast forecast = response.body();
-                displayForecast(forecast);
-            }
-
-            @Override
-            public void onFailure(Call<Forecast> call, Throwable t) {
-
-                Toast.makeText(getContext(), "A PROBLEM OCCURED BUDDY!!!", Toast.LENGTH_SHORT).show();
-            }
-        });
+        disposable.add(forecast);
     }
 
     /**
@@ -164,7 +154,6 @@ public class FragmentDaily extends Fragment {
     private void displayCurrentWeather(CurrentWeather weather) {
 
         dateField.setText(weather.getDate());
-        dayField.setText(weather.getWeekDay());
 
         cityField.setText(weather.getCityName());
 
@@ -192,13 +181,22 @@ public class FragmentDaily extends Fragment {
 
     /**
      *
-     * @param forecast
+     * @param forecastData
      */
-    private void displayForecast(Forecast forecast) {
+    private void displayForecast(Forecast forecastData) {
 
-        daysForecast = forecast.getDaysForecast();
-        Log.wtf("URL_CALLED", daysForecast.size() + "");
-        forecastAdapter.update(daysForecast);
-        //forecastAdapter.notifyDataSetChanged();
+        forecast = forecastData.getDaysForecast();
+        forecastAdapter.update(this.forecast);
+
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_present_from_bottom);
+        super.update(controller);
+
+        /**
+         * Very funny that however we tried optimising for some reason notifyDataSetChanged
+         * keeps getting called too soon. Lightning speed API and connection?
+         */
+
+        // forecastAdapter.notifyDataSetChanged();
     }
 }

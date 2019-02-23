@@ -1,16 +1,22 @@
 package com.slobodanantonijevic.simpleopenweather;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import com.slobodanantonijevic.simpleopenweather.daily.FragmentDaily;
 import com.slobodanantonijevic.simpleopenweather.hourly.FragmentHourly;
 
 public class ActivityMain extends AppCompatActivity {
+
+    private int currentFragmentId;
+    private BottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
@@ -32,7 +38,7 @@ public class ActivityMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         loadTheFragment(R.id.navigation_daily);
     }
@@ -73,6 +79,41 @@ public class ActivityMain extends AppCompatActivity {
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .replace(R.id.container, fragment)
                     .commit();
+
+            currentFragmentId = id;
+        } else {
+
+            popTheSearchDialog();
         }
+    }
+
+    /**
+     *
+     */
+    private void popTheSearchDialog() {
+
+        // TODO: Replace with a real dialog.
+        // TODO: First one pops the "auto-loc" or "manual" question
+        // TODO: Then first one asks permissions and stuff and second one opens the Autocomplete search dialog
+        AlertDialog alertDialog = new AlertDialog.Builder(ActivityMain.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage("Alert message to be shown");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        navigation.setSelectedItemId(currentFragmentId);
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+        //SystemClock.sleep(5000);
+
+        //loadTheFragment(currentFragmentId);
+
+        /*
+         * When dialog gets dismissed
+         * do loadTheFragment(currentFragmentId);
+         */
     }
 }

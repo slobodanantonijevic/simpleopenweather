@@ -84,13 +84,13 @@ public class FragmentHourly extends FragmentForecast {
 
         OpenWeatherApi api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
 
-        Observable<HourlyForecast> call = api.getHourlyForecast("London, UK");
+        Observable<HourlyForecast> call = api.getHourlyForecast(location, lat, lon);
 
         Disposable hourly = call
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::displayForecast, // simple method reference
-                        throwable -> handleRxError(throwable, "DAILY WEATHER")); // onError
+                        throwable -> handleRxError(throwable, HOURLY_WEATHER)); // onError
 
 //                Subscribe could have been done with lambda too
 //                but no point to it as we only have a single method call

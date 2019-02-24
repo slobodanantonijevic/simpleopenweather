@@ -1,7 +1,9 @@
 package com.slobodanantonijevic.simpleopenweather.general;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LayoutAnimationController;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.slobodanantonijevic.simpleopenweather.R;
@@ -27,13 +28,28 @@ import retrofit2.HttpException;
  */
 public class FragmentForecast extends Fragment {
 
+    public static final int CURRENT_WEATHER = 0;
+    public static final int DAILY_WEATHER = 1;
+    public static final int HOURLY_WEATHER = 2;
+
     public static final String LAYOUT_KEY = "inflate_this_layout";
 
     // Forecast fields & values
     public List<DayForecast> forecast = new ArrayList<>();
     public RecyclerView forecastHolder;
 
+    public String location;
+    public String lat;
+    public String lon;
+
     public CompositeDisposable disposable = new CompositeDisposable();
+
+    private LocationInterface callback;
+
+    public interface LocationInterface {
+
+        public void locationError(String location);
+    }
 
     public FragmentForecast() {
         // Required empty public constructor
@@ -55,6 +71,26 @@ public class FragmentForecast extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        location = HelpStuff.retrieveSavedCity(getContext());
+        if (location == null) {
+
+            String[] coords = HelpStuff.retrieveSavedCoords(getContext());
+            lat = coords[0];
+            lon = coords[1];
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+
+        callback = (LocationInterface) context;
+        super.onAttach(context);
+    }
+
     /**
      *
      * @param controller
@@ -71,19 +107,33 @@ public class FragmentForecast extends Fragment {
      *
      * @param throwable
      */
-    public void handleRxError(Throwable throwable, String occurrence) {
+    public void handleRxError(Throwable throwable, int occurrence) {
 
         // TODO: make some more meaningful error handling
-        String message = String.format("%s: Something is not right buddy!", occurrence); // default
+        String message = "WEATHER: Something is not right buddy!"; // default
 
-        if (throwable instanceof HttpException) {
+        if (throwable instanceof HttpException && occurrence != DAILY_WEATHER) {
 
             HttpException response = (HttpException) throwable;
             int code = response.code();
-            message = String.format("%s: We've got HttpException with response code: %d", code);
-        }
 
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            switch (code) {
+
+                case 400:
+                case 404:
+
+                    callback.locationError(location);
+                    break;
+                default:
+
+                    message = String.format("We've got HttpException with response code: %d", code);
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            }
+
+        } else {
+
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
     }
 
 

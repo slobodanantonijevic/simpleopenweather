@@ -1,5 +1,11 @@
 package com.slobodanantonijevic.simpleopenweather.general;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.location.Location;
+
+import com.slobodanantonijevic.simpleopenweather.R;
+
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZoneOffset;
@@ -11,6 +17,8 @@ import org.threeten.bp.format.DateTimeFormatter;
  * sources but want to keep them mutual
  */
 public class HelpStuff {
+
+    private static final String BASIC_CONFIG_FILE = "basic_config_file";
 
     /**
      * Since we need the app to run on APIs prior to 26 we can't use java.time
@@ -76,8 +84,69 @@ public class HelpStuff {
         return Integer.toString((int) Math.round(temp));
     }
 
+    /**
+     *
+     * @param temp
+     * @return
+     */
     public static String roundTheTempDecimal(double temp) {
 
         return Double.toString((double) Math.round(temp * 10) / 10);
+    }
+
+    /**
+     *
+     * @param city
+     * @param context
+     */
+    public static void saveTheCity(String city, Context context) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(context.getString(R.string.location_key), city);
+        editor.apply();
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    public static String retrieveSavedCity(Context context) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
+
+        return sharedPref.getString(context.getString(R.string.location_key), null);
+    }
+
+    /**
+     *
+     * @param context
+     * @param location
+     */
+    public static void saveLatAndLon(Context context, Location location) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(context.getString(R.string.latitude_key), Double.toString(location.getLatitude()));
+        editor.putString(context.getString(R.string.longitude_key), Double.toString(location.getLongitude()));
+        editor.remove(context.getString(R.string.location_key));
+        editor.apply();
+    }
+
+    public static String[] retrieveSavedCoords(Context context) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
+
+        String lat = sharedPref.getString(context.getString(R.string.latitude_key), null);
+        String lon = sharedPref.getString(context.getString(R.string.longitude_key), null);
+
+        return new String[] {lat, lon};
     }
 }

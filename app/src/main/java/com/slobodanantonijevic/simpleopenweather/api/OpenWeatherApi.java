@@ -14,23 +14,31 @@ public interface OpenWeatherApi {
 
     String APP_ID = "60013a62362eda7bbbd86f0e0c56a79a";
     String QUERY = "q";
+    String LAT = "lat";
+    String LON = "lon";
     String PATH = "/data/2.5/";
 
     @GET(PATH + "weather?units=metric&APPID=" + APP_ID)
     Observable<CurrentWeather> getCurrentWeather (
 
-            @Query(QUERY) String query
+            @Query(QUERY) String query,
+            @Query(QUERY) String lat,
+            @Query(QUERY) String lon
     );
 
     @GET(PATH + "forecast/daily?units=metric&APPID=" + APP_ID)
     Observable<Forecast> getForecast (
 
-            @Query(QUERY) String query
+            @Query(QUERY) String query,
+            @Query(QUERY) String lat,
+            @Query(QUERY) String lon
     );
 
     @GET(PATH + "forecast?units=metric&APPID=" + APP_ID)
     Observable<HourlyForecast> getHourlyForecast (
 
-            @Query(QUERY) String query
+            @Query(QUERY) String query,
+            @Query(QUERY) String lat,
+            @Query(QUERY) String lon
     );
 }

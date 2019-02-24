@@ -1,19 +1,37 @@
 package com.slobodanantonijevic.simpleopenweather;
 
-import android.content.DialogInterface;
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.slobodanantonijevic.simpleopenweather.daily.FragmentDaily;
+import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
+import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.hourly.FragmentHourly;
 
-public class ActivityMain extends AppCompatActivity {
+public class ActivityMain extends AppCompatActivity implements FragmentForecast.LocationInterface {
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
+
+    private FusedLocationProviderClient fusedLocationClient;
 
     private int currentFragmentId;
     private BottomNavigationView navigation;
@@ -21,14 +39,14 @@ public class ActivityMain extends AppCompatActivity {
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
 
-                // Handle navigation view item clicks here.
-                int id = item.getItemId();
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
-                // update the main content by replacing fragments
-                loadTheFragment(id);
+        // update the main content by replacing fragments
+        loadTheFragment(id);
 
-                return true;
-            };
+        return true;
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +62,6 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -66,7 +83,6 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     /**
-     *
      * @param id
      */
     private void loadTheFragment(int id) {
@@ -92,28 +108,115 @@ public class ActivityMain extends AppCompatActivity {
      */
     private void popTheSearchDialog() {
 
-        // TODO: Replace with a real dialog.
-        // TODO: First one pops the "auto-loc" or "manual" question
-        // TODO: Then first one asks permissions and stuff and second one opens the Autocomplete search dialog
-        AlertDialog alertDialog = new AlertDialog.Builder(ActivityMain.this).create();
-        alertDialog.setTitle("Alert");
-        alertDialog.setMessage("Alert message to be shown");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-                        navigation.setSelectedItemId(currentFragmentId);
-                        dialog.dismiss();
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.alert_search_location, null);
+        final EditText cityField = view.findViewById(R.id.city);
+        builder.setView(view);
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setTitle(R.string.alert_title_location_search);
+        alertDialog.setMessage(getString(R.string.alert_text_location_search));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
+                getString(R.string.alert_button_location_search_manual),
+                (dialog, which) -> {
+
+                    HelpStuff.saveTheCity(cityField.getText().toString(), ActivityMain.this);
+                    navigation.setSelectedItemId(currentFragmentId);
+                    dialog.dismiss();
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                getString(R.string.alert_button_location_search_auto),
+                (dialog, which) -> {
+
+                    if (ContextCompat.checkSelfPermission(ActivityMain.this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                        // Permission is not granted
+                        // There should be a handle for shouldShowRequestPermissionRationale here
+                        // in other words, if explanation is required, but we will simplify a bit
+                        ActivityCompat.requestPermissions(ActivityMain.this,
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                REQUEST_LOCATION_PERMISSION);
+                    } else {
+
+                        doTheGeoThingy();
                     }
+
+                    dialog.dismiss();
                 });
         alertDialog.show();
-        //SystemClock.sleep(5000);
+    }
 
-        //loadTheFragment(currentFragmentId);
+    @Override
+    public void locationError(String location) {
 
-        /*
-         * When dialog gets dismissed
-         * do loadTheFragment(currentFragmentId);
-         */
+        if (location.length() > 0) {
+
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle(R.string.alert_title_location_error);
+
+            String message = getString(R.string.alert_text_location_error)
+                    .replace("{location}", location);
+            alertDialog.setMessage(message);
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
+                    getString(R.string.alert_button_ok),
+                    (dialog, which) -> {
+
+                        popTheSearchDialog();
+                        dialog.dismiss();
+                    });
+            alertDialog.show();
+        } else {
+
+            popTheSearchDialog();
+        }
+    }
+
+    /**
+     * We already handle not to call this function without permission
+     * so we'll suppress the warning
+     */
+    @SuppressLint("MissingPermission")
+    private void doTheGeoThingy() {
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+
+                    if (location != null) {
+
+                        HelpStuff.saveLatAndLon(ActivityMain.this, location);
+                        navigation.setSelectedItemId(currentFragmentId);
+                    } else {
+
+                        popTheSearchDialog();
+                        Toast.makeText(ActivityMain.this,
+                                R.string.alert_text_auto_location_error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+
+            case REQUEST_LOCATION_PERMISSION: {
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    doTheGeoThingy();
+                } else {
+
+                    popTheSearchDialog();
+                }
+                return;
+            }
+        }
+
     }
 }

@@ -56,6 +56,8 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         loadTheFragment(R.id.navigation_daily);
@@ -182,7 +184,6 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
     @SuppressLint("MissingPermission")
     private void doTheGeoThingy() {
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
 

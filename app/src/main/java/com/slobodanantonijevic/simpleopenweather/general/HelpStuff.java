@@ -75,6 +75,15 @@ public class HelpStuff {
 
     /**
      *
+     * @return
+     */
+    public static int currentTimestamp() {
+
+        return (int) Instant.now().getEpochSecond();
+    }
+
+    /**
+     *
      * @param temp
      * @return
      */
@@ -114,7 +123,7 @@ public class HelpStuff {
      * @param context
      * @return
      */
-    public static String retrieveSavedCity(Context context) {
+    static String retrieveSavedCity(Context context) {
 
         SharedPreferences sharedPref = context.getSharedPreferences(
                 BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
@@ -139,7 +148,7 @@ public class HelpStuff {
         editor.apply();
     }
 
-    public static String[] retrieveSavedCoords(Context context) {
+    static String[] retrieveSavedCoords(Context context) {
 
         SharedPreferences sharedPref = context.getSharedPreferences(
                 BASIC_CONFIG_FILE, Context.MODE_PRIVATE);

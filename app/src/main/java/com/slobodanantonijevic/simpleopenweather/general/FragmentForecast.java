@@ -1,13 +1,9 @@
 package com.slobodanantonijevic.simpleopenweather.general;
 
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,30 +15,45 @@ import com.slobodanantonijevic.simpleopenweather.daily.DayForecast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.HttpException;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentForecast extends Fragment {
+public class FragmentForecast extends Fragment implements Repository.LocationErrorInterface, Repository.UpdateWeatherInterface {
 
-    public static final int CURRENT_WEATHER = 0;
-    public static final int DAILY_WEATHER = 1;
+    protected static final int CURRENT_WEATHER = 0;
+    protected static final int DAILY_WEATHER = 1;
     public static final int HOURLY_WEATHER = 2;
 
-    public static final String LAYOUT_KEY = "inflate_this_layout";
+    protected static final String LAYOUT_KEY = "inflate_this_layout";
+
+    // Butter Knife Unbinder
+    protected Unbinder unbinder;
 
     // Forecast fields & values
-    public List<DayForecast> forecast = new ArrayList<>();
-    public RecyclerView forecastHolder;
+    protected List<DayForecast> forecast = new ArrayList<>();
 
-    public String location;
-    public String lat;
-    public String lon;
+    // Butter Knife
+    @BindView(R.id.forecastHolder) protected RecyclerView forecastHolder;
 
-    public CompositeDisposable disposable = new CompositeDisposable();
+    protected String location;
+    protected String lat;
+    protected String lon;
+
+    protected CompositeDisposable disposable = new CompositeDisposable();
 
     private LocationInterface callback;
 
@@ -57,13 +68,13 @@ public class FragmentForecast extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         int layout = savedInstanceState.getInt(LAYOUT_KEY);
         View rootView = inflater.inflate(layout, container, false);
 
-        forecastHolder = rootView.findViewById(R.id.forecastHolder);
+        unbinder = ButterKnife.bind(this, rootView);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         forecastHolder.setLayoutManager(layoutManager);
@@ -75,7 +86,7 @@ public class FragmentForecast extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        location = HelpStuff.retrieveSavedCity(getContext());
+        location = HelpStuff.retrieveSavedCity(Objects.requireNonNull(getContext()));
         if (location == null) {
 
             String[] coords = HelpStuff.retrieveSavedCoords(getContext());
@@ -95,11 +106,11 @@ public class FragmentForecast extends Fragment {
      *
      * @param controller
      */
-    public void update(LayoutAnimationController controller) {
+    protected void update(LayoutAnimationController controller) {
 
         forecastHolder.setLayoutAnimation(controller);
 
-        forecastHolder.getAdapter().notifyDataSetChanged();
+        Objects.requireNonNull(forecastHolder.getAdapter()).notifyDataSetChanged();
         forecastHolder.scheduleLayoutAnimation();
     }
 
@@ -107,7 +118,8 @@ public class FragmentForecast extends Fragment {
      *
      * @param throwable
      */
-    public void handleRxError(Throwable throwable, int occurrence) {
+    @SuppressLint("DefaultLocale")
+    protected void handleRxError(Throwable throwable, int occurrence) {
 
         // TODO: make some more meaningful error handling
         String message = "WEATHER: Something is not right buddy!"; // default
@@ -115,6 +127,7 @@ public class FragmentForecast extends Fragment {
         if (throwable instanceof HttpException && occurrence != DAILY_WEATHER) {
 
             HttpException response = (HttpException) throwable;
+            Log.wtf("RETRO ERROR", response.response().raw().request().url().toString());
             int code = response.code();
 
             switch (code) {
@@ -146,5 +159,19 @@ public class FragmentForecast extends Fragment {
 
             disposable.dispose();
         }
+
+        if (unbinder != null) {
+
+            unbinder.unbind();
+        };
     }
+
+    @Override
+    public void locationError(Throwable throwable, int occurrence) {
+
+        handleRxError(throwable, occurrence);
+    }
+
+    @Override
+    public void updateWeather() { }
 }

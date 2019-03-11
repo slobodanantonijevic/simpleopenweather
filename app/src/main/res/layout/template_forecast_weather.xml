@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/forecastContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -9,15 +9,15 @@
         android:id="@+id/date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_marginStart="@dimen/basic_margin"
         android:layout_marginLeft="@dimen/basic_margin"
         android:layout_marginTop="@dimen/basic_margin"
         android:textColor="@android:color/white"
         android:textSize="@dimen/other_days_text_size"
+        android:visibility="gone"
         app:fontTypeFaceAsset="Prime-Regular.otf"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
@@ -58,7 +58,7 @@
         app:layout_constraintEnd_toEndOf="@+id/weatherCellBackground"
         app:layout_constraintTop_toTopOf="@+id/day" />
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/weatherIcon"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -70,7 +70,7 @@
         app:layout_constraintTop_toTopOf="@+id/day"
         app:srcCompat="@drawable/clear_day" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,16 +82,16 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/basic_margin"
-        app:layout_constraintTop_toBottomOf="@+id/day"/>
+        app:layout_constraintTop_toBottomOf="@+id/day" />
 
-    <android.support.constraint.ConstraintLayout
-        android:visibility="gone"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/additionalData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/borderView">
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/maxTempIcon"
             android:layout_width="@dimen/other_conditions_icon_size"
             android:layout_height="@dimen/other_conditions_icon_size"
@@ -113,7 +113,7 @@
             app:layout_constraintStart_toEndOf="@+id/maxTempIcon"
             app:layout_constraintTop_toTopOf="@+id/maxTempIcon" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/minTempIcon"
             android:layout_width="@dimen/other_conditions_icon_size"
             android:layout_height="@dimen/other_conditions_icon_size"
@@ -137,7 +137,7 @@
             app:layout_constraintStart_toEndOf="@+id/minTempIcon"
             app:layout_constraintTop_toTopOf="@+id/minTempIcon" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/humidityIcon"
             android:layout_width="@dimen/other_conditions_icon_size"
             android:layout_height="0dp"
@@ -162,7 +162,7 @@
             app:layout_constraintStart_toEndOf="@+id/humidityIcon"
             app:layout_constraintTop_toTopOf="@+id/humidityIcon" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/pressureIcon"
             android:layout_width="@dimen/other_conditions_icon_size"
             android:layout_height="0dp"
@@ -188,7 +188,7 @@
             app:layout_constraintStart_toEndOf="@+id/pressureIcon"
             app:layout_constraintTop_toTopOf="@+id/windIcon" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/windIcon"
             android:layout_width="@dimen/other_conditions_icon_size"
             android:layout_height="0dp"
@@ -215,6 +215,6 @@
             app:layout_constraintStart_toEndOf="@+id/windIcon"
             app:layout_constraintTop_toTopOf="@+id/windIcon" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

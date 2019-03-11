@@ -1,9 +1,12 @@
 package com.slobodanantonijevic.simpleopenweather.hourly;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +23,13 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
     private List<HourForecast> forecast;
     private Context context;
 
-    public ForecastAdapter(List<HourForecast> forecast, Context context) {
+    ForecastAdapter(List<HourForecast> forecast, Context context) {
 
         this.forecast = forecast;
         this.context = context;
     }
 
-    public void update(List<HourForecast> forecast) {
+    void update(List<HourForecast> forecast) {
 
         this.forecast = forecast;
     }
@@ -41,6 +44,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
         return new ForecastViewHolder(item, context);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ForecastViewHolder viewHolder, int i) {
 
@@ -82,11 +86,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
         viewHolder.wind.setText(Double.toString(hourForecast.getWind().getSpeed()).concat(Weather.WIND));
     }
 
-    /**
-     * Generally it will always be 6, but just to be safe that it does not change on the API side
-     * and caches us unprepared
-     * @return
-     */
     @Override
     public int getItemCount() {
 

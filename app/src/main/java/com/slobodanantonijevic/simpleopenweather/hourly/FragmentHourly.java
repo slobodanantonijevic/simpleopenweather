@@ -1,7 +1,7 @@
 package com.slobodanantonijevic.simpleopenweather.hourly;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,19 +9,22 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
 import com.slobodanantonijevic.simpleopenweather.R;
-import com.slobodanantonijevic.simpleopenweather.api.OpenWeather;
-import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 import com.slobodanantonijevic.simpleopenweather.general.City;
 import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
 import com.slobodanantonijevic.widget.CustomTextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import javax.inject.Inject;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import butterknife.BindView;
+import dagger.android.support.AndroidSupportInjection;
 
 /**
  * Even though it is rather similar logic to ForecastDaily we'll be keeping it separate
@@ -29,25 +32,29 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class FragmentHourly extends FragmentForecast {
 
-    // Forecast fields & values
-    public List<HourForecast> forecast = new ArrayList<>();
-    private City city;
-    private ForecastAdapter forecastAdapter;
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
 
-    private CustomTextView cityField;
+    // Butter Knife
+    @BindView(R.id.city) CustomTextView cityField;
+
+    // Forecast fields & values
+    private List<HourForecast> forecast = new ArrayList<>();
+    private HourlyViewModel viewModel;
+    private ForecastAdapter forecastAdapter;
 
     public FragmentHourly() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onAttach(Context context) {
 
+        super.onAttach(context);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         if (savedInstanceState == null) {
@@ -56,16 +63,12 @@ public class FragmentHourly extends FragmentForecast {
         }
         savedInstanceState.putInt(LAYOUT_KEY, R.layout.fragment_hourly);
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        forecastHolder = rootView.findViewById(R.id.forecastHolder);
 
         forecastAdapter = new ForecastAdapter(forecast, getContext());
         forecastHolder.setAdapter(forecastAdapter);
 
-        int resId = R.anim.layout_anim_present_from_right;
-        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), resId);
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_present_from_right);
         forecastHolder.setLayoutAnimation(animation);
-
-        locateHeaderFields(rootView);
 
         return rootView;
     }
@@ -74,7 +77,13 @@ public class FragmentHourly extends FragmentForecast {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        AndroidSupportInjection.inject(this); // Has to be done after the activity is created
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(HourlyViewModel.class);
+        viewModel.init(this, location, lat, lon);
+
         findForecast();
+
     }
 
     /**
@@ -82,25 +91,10 @@ public class FragmentHourly extends FragmentForecast {
      */
     private void findForecast() {
 
-        OpenWeatherApi api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
+        if (viewModel.getHourlyWeather().getValue() != null) {
 
-        Observable<HourlyForecast> call = api.getHourlyForecast(location, lat, lon);
-
-        Disposable hourly = call
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::displayForecast, // simple method reference
-                        throwable -> handleRxError(throwable, HOURLY_WEATHER)); // onError
-
-//                Subscribe could have been done with lambda too
-//                but no point to it as we only have a single method call
-//                and it is more elegant to use a simple method reference
-//                .subscribe(hourlyForecast -> {
-//
-//                    displayForecast(hourlyForecast);
-//                });
-
-        disposable.add(hourly);
+            displayForecast(viewModel.getHourlyWeather().getValue());
+        }
     }
 
     /**
@@ -109,14 +103,26 @@ public class FragmentHourly extends FragmentForecast {
      */
     private void displayForecast(HourlyForecast forecastData) {
 
-        forecast = forecastData.getHoursForecast();
-        city = forecastData.getCity();
-        displayCity(city.cityAndCountry());
-        forecastAdapter.update(this.forecast);
+        try {
 
-        final LayoutAnimationController controller =
-                AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_present_from_right);
-        super.update(controller);
+            forecast = forecastData.getHoursForecast();
+            City city = forecastData.getCity();
+            displayCity(city.cityAndCountry());
+            forecastAdapter.update(this.forecast);
+
+            final LayoutAnimationController controller =
+                    AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_present_from_right);
+            super.update(controller);
+        } catch (NullPointerException npe) {
+
+            // Do nothing wait for the data to come
+        }
+    }
+
+    @Override
+    public void updateWeather() {
+
+        findForecast();
     }
 
     /**
@@ -128,12 +134,10 @@ public class FragmentHourly extends FragmentForecast {
         cityField.setText(city);
     }
 
-    /**
-     *
-     * @param rootView
-     */
-    private void locateHeaderFields(View rootView) {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-        cityField = rootView.findViewById(R.id.city);
+        viewModel.disposeDisposables();
     }
 }

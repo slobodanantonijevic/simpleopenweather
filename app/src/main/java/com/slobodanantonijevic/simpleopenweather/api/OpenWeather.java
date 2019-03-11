@@ -5,6 +5,8 @@ package com.slobodanantonijevic.simpleopenweather.api;
  * At least I hope... :)
  */
 
+
+
 import javax.inject.Singleton;
 
 import io.reactivex.schedulers.Schedulers;

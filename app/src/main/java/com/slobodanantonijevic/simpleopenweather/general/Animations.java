@@ -7,14 +7,14 @@ import android.view.animation.AnimationUtils;
 
 import com.slobodanantonijevic.simpleopenweather.R;
 
-public class Animations {
+class Animations {
 
     /**
      *
      * @param ctx
      * @param v
      */
-    public static void expand(Context ctx, final View v) {
+    static void expand(Context ctx, final View v) {
 
         Animation a = AnimationUtils.loadAnimation(ctx, R.anim.layout_anim_expand);
         if (a != null) {
@@ -53,7 +53,7 @@ public class Animations {
      * @param ctx
      * @param v
      */
-    public static void collapse(Context ctx, final View v) {
+    static void collapse(Context ctx, final View v) {
 
         Animation a = AnimationUtils.loadAnimation(ctx, R.anim.layout_anim_collapse);
         if (a != null) {

@@ -1,10 +1,12 @@
 package com.slobodanantonijevic.simpleopenweather.daily;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,11 @@ import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.general.Weather;
 import com.slobodanantonijevic.widget.CustomTextView;
 
+import java.util.Objects;
+
+import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -26,21 +33,18 @@ import io.reactivex.schedulers.Schedulers;
 
 public class FragmentDaily extends FragmentForecast {
 
-    public ForecastAdapter forecastAdapter;
+    private ForecastAdapter forecastAdapter;
 
-    /**
-     * Generally we did not have to put them as globals but since we'll add a refresh functionality
-     * preventing multiple findViewById(s) (on each refresh), seems like a smart idea
-     */
-    private CustomTextView dateField;
-    private CustomTextView cityField;
-    private CustomTextView temperatureField;
-    private CustomTextView pressureField;
-    private CustomTextView humidityField;
-    private CustomTextView windField;
-    private CustomTextView minTempField;
-    private CustomTextView maxTempField;
-    private AppCompatImageView weatherImage;
+    // Butter Knife
+    @BindView(R.id.date) CustomTextView dateField;
+    @BindView(R.id.city) CustomTextView cityField;
+    @BindView(R.id.currentTemperature) CustomTextView temperatureField;
+    @BindView(R.id.pressure) CustomTextView pressureField;
+    @BindView(R.id.humidity) CustomTextView humidityField;
+    @BindView(R.id.wind) CustomTextView windField;
+    @BindView(R.id.minTemp) CustomTextView minTempField;
+    @BindView(R.id.maxTemp) CustomTextView maxTempField;
+    @BindView(R.id.weatherIcon) AppCompatImageView weatherImage;
 
     public FragmentDaily() {
 
@@ -54,7 +58,7 @@ public class FragmentDaily extends FragmentForecast {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         if (savedInstanceState == null) {
@@ -64,11 +68,10 @@ public class FragmentDaily extends FragmentForecast {
         savedInstanceState.putInt(LAYOUT_KEY, R.layout.fragment_daily);
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
-        RecyclerView forecastHolder = rootView.findViewById(R.id.forecastHolder);
+        unbinder = ButterKnife.bind(this, rootView);
+
         forecastAdapter = new ForecastAdapter(forecast, getContext());
         forecastHolder.setAdapter(forecastAdapter);
-
-        locateCurrentWeatherFields(rootView);
 
         return rootView;
     }
@@ -79,23 +82,6 @@ public class FragmentDaily extends FragmentForecast {
 
         findCurrentWeather();
         findForecast();
-    }
-
-    /**
-     *
-     * @param rootView
-     */
-    private void locateCurrentWeatherFields(View rootView) {
-
-        dateField = rootView.findViewById(R.id.date);
-        cityField = rootView.findViewById(R.id.city);
-        temperatureField = rootView.findViewById(R.id.currentTemperature);
-        pressureField = rootView.findViewById(R.id.pressure);
-        humidityField = rootView.findViewById(R.id.humidity);
-        windField = rootView.findViewById(R.id.wind);
-        minTempField = rootView.findViewById(R.id.minTemp);
-        maxTempField = rootView.findViewById(R.id.maxTemp);
-        weatherImage = rootView.findViewById(R.id.weatherIcon);
     }
 
     /**
@@ -151,6 +137,7 @@ public class FragmentDaily extends FragmentForecast {
      *
      * @param weather
      */
+    @SuppressLint("SetTextI18n")
     private void displayCurrentWeather(CurrentWeather weather) {
 
         dateField.setText(weather.getDate());
@@ -175,7 +162,7 @@ public class FragmentDaily extends FragmentForecast {
         int icon = Weather.findWeatherIcon(weatherId);
         if (icon != 0) {
 
-            weatherImage.setImageDrawable(ContextCompat.getDrawable(getContext(), icon));
+            weatherImage.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), icon));
         }
     }
 
@@ -192,7 +179,7 @@ public class FragmentDaily extends FragmentForecast {
                 AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_present_from_bottom);
         super.update(controller);
 
-        /**
+        /*
          * Very funny that however we tried optimising for some reason notifyDataSetChanged
          * keeps getting called too soon. Lightning speed API and connection?
          */

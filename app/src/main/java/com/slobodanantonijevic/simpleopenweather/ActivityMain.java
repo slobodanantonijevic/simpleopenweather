@@ -3,17 +3,13 @@ package com.slobodanantonijevic.simpleopenweather;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -21,20 +17,48 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.slobodanantonijevic.simpleopenweather.daily.FragmentDaily;
 import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.hourly.FragmentHourly;
 
-public class ActivityMain extends AppCompatActivity implements FragmentForecast.LocationInterface {
+import javax.inject.Inject;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
+
+public class ActivityMain extends AppCompatActivity implements FragmentForecast.LocationInterface, HasSupportFragmentInjector {
+
+    @Inject
+    DispatchingAndroidInjector<Fragment> dispatchingFragmentInjector;
+
+    private static final String ACTIVE_FRAGMENT_KEY = "active_fragment";
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private FusedLocationProviderClient fusedLocationClient;
 
-    private int currentFragmentId;
-    private BottomNavigationView navigation;
+    private int currentFragmentId = 0;
+
+    // Butter Knife
+    @BindView(R.id.navigation) BottomNavigationView navigation;
+    @BindString(R.string.alert_title_location_search) String alertTitleLocationSearch;
+    @BindString(R.string.alert_text_location_search) String alertTextLocationSearch;
+    @BindString(R.string.alert_button_location_search_manual) String alertButtonLocationSearchManual;
+    @BindString(R.string.alert_button_location_search_auto) String alertButtonLocationSearchAuto;
+    @BindString(R.string.alert_title_location_error) String alertTitleLocationError;
+    @BindString(R.string.alert_text_location_error) String alertTextLocationError;
+    @BindString(R.string.alert_button_ok) String alertButtonOk;
+    @BindString(R.string.alert_text_auto_location_error) String alertTextAutoLocationError;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
@@ -54,13 +78,17 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
         setTheme(R.style.AppTheme);
 
         super.onCreate(savedInstanceState);
+
+        currentFragmentId = checkFragmentFromState(savedInstanceState);
+        AndroidInjection.inject(this);
+
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        loadTheFragment(R.id.navigation_daily);
+        loadTheFragment(currentFragmentId != 0 ? currentFragmentId : R.id.navigation_daily);
     }
 
     /**
@@ -118,18 +146,16 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
         builder.setView(view);
 
         AlertDialog alertDialog = builder.create();
-        alertDialog.setTitle(R.string.alert_title_location_search);
-        alertDialog.setMessage(getString(R.string.alert_text_location_search));
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
-                getString(R.string.alert_button_location_search_manual),
+        alertDialog.setTitle(alertTitleLocationSearch);
+        alertDialog.setMessage(alertTextLocationSearch);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, alertButtonLocationSearchManual,
                 (dialog, which) -> {
 
                     HelpStuff.saveTheCity(cityField.getText().toString(), ActivityMain.this);
                     navigation.setSelectedItemId(currentFragmentId);
                     dialog.dismiss();
                 });
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                getString(R.string.alert_button_location_search_auto),
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, alertButtonLocationSearchAuto,
                 (dialog, which) -> {
 
                     if (ContextCompat.checkSelfPermission(ActivityMain.this,
@@ -155,16 +181,14 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
     @Override
     public void locationError(String location) {
 
-        if (location.length() > 0) {
+        if (location != null && location.length() > 0) {
 
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle(R.string.alert_title_location_error);
+            alertDialog.setTitle(alertTitleLocationError);
 
-            String message = getString(R.string.alert_text_location_error)
-                    .replace("{location}", location);
+            String message = alertTextLocationError.replace("{location}", location);
             alertDialog.setMessage(message);
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,
-                    getString(R.string.alert_button_ok),
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, alertButtonOk,
                     (dialog, which) -> {
 
                         popTheSearchDialog();
@@ -194,15 +218,16 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
                     } else {
 
                         popTheSearchDialog();
-                        Toast.makeText(ActivityMain.this,
-                                R.string.alert_text_auto_location_error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ActivityMain.this, alertTextAutoLocationError,
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
 
             case REQUEST_LOCATION_PERMISSION: {
@@ -215,9 +240,37 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
 
                     popTheSearchDialog();
                 }
-                return;
             }
         }
 
+    }
+
+    /**
+     *
+     * @param savedState
+     * @return
+     */
+    private int checkFragmentFromState(Bundle savedState) {
+
+        try {
+
+            return savedState.getInt(ACTIVE_FRAGMENT_KEY);
+        } catch (NullPointerException npe) {
+
+            return 0;
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(ACTIVE_FRAGMENT_KEY, currentFragmentId);
+    }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+
+        return dispatchingFragmentInjector;
     }
 }

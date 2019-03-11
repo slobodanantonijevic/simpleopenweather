@@ -1,10 +1,12 @@
 package com.slobodanantonijevic.simpleopenweather.daily;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +44,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
         return new ForecastViewHolder(item, context);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ForecastViewHolder viewHolder, int i) {
 
@@ -81,7 +84,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
     @Override
     public int getItemCount() {
 
-        //Log.wtf("THIS WORKS", (forecast.size() - 1) + "");
         return forecast.size() - 1; // We already have today's weather in main container
     }
 }

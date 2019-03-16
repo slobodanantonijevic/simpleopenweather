@@ -5,6 +5,7 @@ import android.util.Log;
 import com.slobodanantonijevic.simpleopenweather.general.WeatherViewModel;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -20,19 +21,27 @@ public class HourlyViewModel extends WeatherViewModel {
         this.weatherRepo = weatherRepo;
     }
 
-    @Override
-    public void init(Fragment ctx, String location, String lat, String lon) {
-        super.init(ctx, location, lat, lon);
+    /**
+     *
+     * @param fragment
+     * @param locationId
+     * @param location
+     * @param lat
+     * @param lon
+     */
+    public void init(Fragment fragment, Integer locationId, String location, String lat, String lon) {
+        super.init(fragment);
 
-        if (this.hourlyForecast != null) {
+        if (this.hourlyForecast != null && !weatherRepo.isExpired()) {
 
-            Log.wtf("HOURLY", "DATA HERE");
+            // Data is here and still valid
+            Log.wtf("HOURLY VM", "DATA HERE");
             return;
         }
 
         Log.wtf("HOURLY VM LOCATION", location);
 
-        hourlyForecast = weatherRepo.getHourlyForecast(ctx, location, lat, lon);
+        hourlyForecast = weatherRepo.getHourlyForecast(fragment, locationId, location, lat, lon);
     }
 
     /**

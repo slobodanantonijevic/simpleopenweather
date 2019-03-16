@@ -120,6 +120,48 @@ public class HelpStuff {
 
     /**
      *
+     * @param cityId
+     * @param context
+     */
+    public static void saveTheCityId(Integer cityId, Context context) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(context.getString(R.string.location_id_key), cityId);
+        editor.apply();
+    }
+
+    /**
+     *
+     * @param context
+     */
+    public static void removeTheCityId(Context context) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.remove(context.getString(R.string.location_id_key));
+        editor.apply();
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    static int retrieveSavedCityId(Context context) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
+
+        return sharedPref.getInt(context.getString(R.string.location_id_key), -1);
+    }
+
+    /**
+     *
      * @param context
      * @return
      */

@@ -152,6 +152,9 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
                 (dialog, which) -> {
 
                     HelpStuff.saveTheCity(cityField.getText().toString(), ActivityMain.this);
+                    // no id present will signal the fragment to fetch fresh data
+                    HelpStuff.removeTheCityId(ActivityMain.this);
+
                     navigation.setSelectedItemId(currentFragmentId);
                     dialog.dismiss();
                 });

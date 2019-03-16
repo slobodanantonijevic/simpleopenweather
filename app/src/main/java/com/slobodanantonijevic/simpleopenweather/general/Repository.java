@@ -1,6 +1,10 @@
 package com.slobodanantonijevic.simpleopenweather.general;
 
+import android.content.Context;
+
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
+
+import java.util.concurrent.Executor;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -15,8 +19,7 @@ public class Repository {
     protected CompositeDisposable disposable = new CompositeDisposable();
 
     public OpenWeatherApi api;
-
-    public String location;
+    public Context context;
 
     protected LocationErrorInterface locationCallback;
     protected UpdateWeatherInterface updateCallback;

@@ -35,10 +35,11 @@ public class CurrentWeather {
 
     @SerializedName("dt")
     @Expose
-    private int unixDate;
+    private int unixDate; // Sadly this one is not completely dynamic and cannot be used as time update marker
 
     private String date; // Format L dd
     private String weekDay;
+    private int lastUpdate = 0;
 
     public List<Weather> getWeather() {
 
@@ -119,5 +120,15 @@ public class CurrentWeather {
     public void setDate(String date) {
 
         this.date = date;
+    }
+
+    public int getLastUpdate() {
+
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(int lastUpdate) {
+
+        this.lastUpdate = lastUpdate;
     }
 }

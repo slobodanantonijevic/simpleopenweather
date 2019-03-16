@@ -10,27 +10,16 @@ public class WeatherViewModel extends ViewModel {
 
     public OpenWeatherApi api;
 
-    public Fragment context;
-
-    public String location;
-    public String lat;
-    public String lon;
+    public Fragment fragment;
 
     /**
      *
-     * @param ctx
-     * @param location
-     * @param lat
-     * @param lon
+     * @param fragment
      */
-    public void init(Fragment ctx, String location, String lat, String lon) {
+    public void init(Fragment fragment) {
 
         api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
 
-        this.context = ctx;
-
-        this.location = location;
-        this.lat = lat;
-        this.lon = lon;
+        this.fragment = fragment;
     }
 }

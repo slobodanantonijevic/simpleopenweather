@@ -21,9 +21,9 @@ public class OpenWeather {
     private static volatile Retrofit retrofit;
 
     // Dummy object for synchronization
-    private static Object dummy = new Object();
+    private static final Object dummy = new Object();
 
-    public static final String BASE_URL = "https://api.openweathermap.org/";
+    private static final String BASE_URL = "https://api.openweathermap.org/";
 
     public static Retrofit getRetrofitInstance() {
 

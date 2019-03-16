@@ -91,7 +91,7 @@ public class FragmentDaily extends FragmentForecast {
 
         OpenWeatherApi api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
 
-        Observable<CurrentWeather> call = api.getCurrentWeather(location, lat, lon);
+        Observable<CurrentWeather> call = api.getCurrentWeather(locationId, location, lat, lon);
 
         Disposable current = call
                 .subscribeOn(Schedulers.io())
@@ -101,6 +101,7 @@ public class FragmentDaily extends FragmentForecast {
                     String date = HelpStuff
                             .time(currentWeather.getUnixDate(), "EEE, LLL dd");
                     currentWeather.setDate(date);
+
                     displayCurrentWeather(currentWeather);
                 }, throwable -> handleRxError(throwable, CURRENT_WEATHER));  // onError
 
@@ -114,12 +115,17 @@ public class FragmentDaily extends FragmentForecast {
 
         OpenWeatherApi api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
 
-        Observable<Forecast> call = api.getForecast(location, lat, lon);
+        Observable<Forecast> call = api.getForecast(locationId, location, lat, lon);
 
         Disposable forecast = call
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::displayForecast, // simple method reference
+                .subscribe(forecastWeather -> {
+
+                    int cityId = forecastWeather.getCity().getId();
+
+                    displayForecast(forecastWeather);
+                }, // simple method reference
                         throwable -> handleRxError(throwable, DAILY_WEATHER)); // onError
 
 //                Subscribe could have been done with lambda too

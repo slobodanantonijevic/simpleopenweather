@@ -49,6 +49,7 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
     // Butter Knife
     @BindView(R.id.forecastHolder) protected RecyclerView forecastHolder;
 
+    protected Integer locationId;
     protected String location;
     protected String lat;
     protected String lon;
@@ -65,7 +66,6 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
     public FragmentForecast() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -86,6 +86,8 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        locationId = HelpStuff.retrieveSavedCityId(Objects.requireNonNull(getContext()));
+        locationId = locationId < 0 ? null : locationId;
         location = HelpStuff.retrieveSavedCity(Objects.requireNonNull(getContext()));
         if (location == null) {
 

@@ -11,6 +11,7 @@ import android.view.animation.LayoutAnimationController;
 import com.slobodanantonijevic.simpleopenweather.R;
 import com.slobodanantonijevic.simpleopenweather.general.City;
 import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
+import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.widget.CustomTextView;
 
 import java.util.ArrayList;
@@ -79,11 +80,12 @@ public class FragmentHourly extends FragmentForecast {
 
         AndroidSupportInjection.inject(this); // Has to be done after the activity is created
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(HourlyViewModel.class);
-        viewModel.init(this, location, lat, lon);
+        // Binding view model to activity rather than a fragment will always ensure for it to survive the orientation change
+        viewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity()), viewModelFactory)
+                .get(HourlyViewModel.class);
+        viewModel.init(this, locationId, location, lat, lon);
 
         findForecast();
-
     }
 
     /**
@@ -93,6 +95,8 @@ public class FragmentHourly extends FragmentForecast {
 
         if (viewModel.getHourlyWeather().getValue() != null) {
 
+            // save the new current city Id
+            HelpStuff.saveTheCityId(viewModel.getHourlyWeather().getValue().getId(), getContext());
             displayForecast(viewModel.getHourlyWeather().getValue());
         }
     }

@@ -1,6 +1,21 @@
+/*
+ * Copyright (C) 2019 Slobodan Antonijević
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.slobodanantonijevic.simpleopenweather.daily;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
@@ -22,7 +37,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ForecastRepository extends Repository {
 
-    MutableLiveData<Forecast> data = new MutableLiveData<>();
+    private MutableLiveData<Forecast> data = new MutableLiveData<>();
 
     private DailyDao dailyDao;
 
@@ -36,8 +51,8 @@ public class ForecastRepository extends Repository {
     }
 
     /**
-     *
-     * @param fragment
+     * Initializer for mandatory instances
+     * @param fragment Fragment instance to bind the interface callbacks to
      */
     void init(Fragment fragment) {
 
@@ -47,23 +62,19 @@ public class ForecastRepository extends Repository {
 
     /**
      *
-     * @param fragment
-     * @param locationId
-     * @param location
-     * @param lat
-     * @param lon
-     * @return
+     * @param locationId cityId as per OpenWeatherMap API
+     * @param location city name
+     * @param lat city latitude
+     * @param lon city longitude
+     * @return LiveData with Forecast model
      */
-    LiveData<Forecast> getDailyForecast(Fragment fragment, Integer locationId, String location,
+    LiveData<Forecast> getDailyForecast(Integer locationId, String location,
                                         String lat, String lon) {
-
-        Log.wtf("FORECAST", "BUILD INTERFACE");
 
         if (locationId != null) {
 
             if (data != null && !isExpired(lastUpdate())) {
 
-                Log.wtf("DAILY REPO", "OLD DATA");
                 return data;
             }
 
@@ -77,12 +88,12 @@ public class ForecastRepository extends Repository {
     }
 
     /**
-     *
-     * @param locationId
+     * Fetch the data from the db, if we have any
+     * until we can present some fresh data to the user
+     * @param locationId cityId as per OpenWeatherMap API
      */
     private void fetchFromDb(Integer locationId) {
 
-        Log.wtf("DAILY REPO", "TRYING THE DB DATA");
         Disposable currentDisposable = dailyDao.findById(locationId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -92,7 +103,7 @@ public class ForecastRepository extends Repository {
 
                             updateForecastWeather();
                         },
-                        throwable -> Log.wtf("DAILY REPO FETCH", throwable.getCause()));
+                        throwable -> handleRxError(throwable, DAILY_WEATHER));
 
         disposable.add(currentDisposable);
 
@@ -100,28 +111,29 @@ public class ForecastRepository extends Repository {
     }
 
     /**
-     *
+     * Insert fresh data into a db
      */
     private void insertIntoDb() {
 
-        Log.wtf("DAILY REPO", "INSERTING THE DB DATA");
         Completable.fromAction(() -> dailyDao.insert(data.getValue()))
                 .subscribeOn(Schedulers.io())
                 .subscribe();
     }
 
     /**
+     * Get the fresh data from OpenWeather API
      *
-     * @param locationId
-     * @param location
-     * @param lat
-     * @param lon
+     * Any of the below params can be null, as long as at least one version is provided
+     * either locationId, location name, or lat & lon, retrofit is smart enough to ignore
+     * null params for requests
+     * @param locationId cityId as per OpenWeatherMap API
+     * @param location city name
+     * @param lat city latitude
+     * @param lon city longitude
      */
     private void refreshData(Integer locationId, String location, String lat, String lon) {
 
         Observable<Forecast> call = api.getForecast(locationId, location, lat, lon);
-
-        Log.wtf("DAILY REPO", "FRESH DATA");
 
         Disposable current = call
                 .subscribeOn(Schedulers.io())
@@ -142,10 +154,10 @@ public class ForecastRepository extends Repository {
     }
 
     /**
-     *
-     * @return
+     * Check when was the last time current data is fetched
+     * @return The unix timestamp (epoch seconds) of the last update time or 0 if it is unfetchable
      */
-    int lastUpdate() {
+    private int lastUpdate() {
 
         try {
 
@@ -163,6 +175,9 @@ public class ForecastRepository extends Repository {
         updateForecastCallback = (UpdateForecastInterface) context;
     }
 
+    /**
+     * Called on Fragment's onDestroy, the disposables have to be disposed when the fragment is gone
+     */
     void dispose() {
 
         if (disposable != null && !disposable.isDisposed()) {

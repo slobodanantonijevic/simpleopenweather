@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2019 Slobodan Antonijević
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.slobodanantonijevic.simpleopenweather.db;
 
 import com.google.gson.Gson;
@@ -12,12 +28,15 @@ import java.util.List;
 
 import androidx.room.TypeConverter;
 
+/**
+ * Type Converter to instruct Room how to serialize and deserialize List(s) of data
+ */
 public class DataTypeConverter {
 
     private static Gson gson = new Gson();
 
     @TypeConverter
-    public static List<HourForecast> stringToHourlyList(String data) {
+    static List<HourForecast> stringToHourlyList(String data) {
 
         if (data == null) {
             return Collections.emptyList();
@@ -30,13 +49,13 @@ public class DataTypeConverter {
 
 
     @TypeConverter
-    public static String hourlyListToString(List<HourForecast> list) {
+    static String hourlyListToString(List<HourForecast> list) {
 
         return gson.toJson(list);
     }
 
     @TypeConverter
-    public static List<Weather> stringToWeatherList (String data) {
+    static List<Weather> stringToWeatherList (String data) {
 
         if (data == null) {
             return Collections.emptyList();
@@ -48,13 +67,13 @@ public class DataTypeConverter {
     }
 
     @TypeConverter
-    public static String weatherListToString(List<Weather> list) {
+    static String weatherListToString(List<Weather> list) {
 
         return gson.toJson(list);
     }
 
     @TypeConverter
-    public static List<DayForecast> stringToDailyList (String data) {
+    static List<DayForecast> stringToDailyList (String data) {
 
         if (data == null) {
             return Collections.emptyList();
@@ -66,7 +85,7 @@ public class DataTypeConverter {
     }
 
     @TypeConverter
-    public static String dailyListToString(List<DayForecast> list) {
+    static String dailyListToString(List<DayForecast> list) {
 
         return gson.toJson(list);
     }

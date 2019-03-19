@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2019 Slobodan Antonijević
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.slobodanantonijevic.simpleopenweather.general;
 
 import android.content.Context;
@@ -35,8 +51,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param unixDate
-     * @return
+     * @param unixDate unix timestamp (seconds)
+     * @return weekday
      */
     public static String weekDay(int unixDate) {
 
@@ -45,8 +61,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param unixDate
-     * @return
+     * @param unixDate unix timestamp (seconds)
+     * @return date in MMMM d pattern
      */
     public static String date(int unixDate) {
 
@@ -55,7 +71,8 @@ public class HelpStuff {
 
     /**
      *
-     * @return
+     * @param unixDate unix timestamp (seconds)
+     * @return hour in HH pattern
      */
     public static String hourByUtc(int unixDate) {
 
@@ -64,9 +81,9 @@ public class HelpStuff {
 
     /**
      *
-     * @param unixDate
+     * @param unixDate unix timestamp (seconds)
      * @param pattern
-     * @return
+     * @return time in desired pattern
      */
     public static String time(int unixDate, String pattern) {
 
@@ -75,7 +92,7 @@ public class HelpStuff {
 
     /**
      *
-     * @return
+     * @return curent unix timestamp
      */
     public static int currentTimestamp() {
 
@@ -84,8 +101,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param temp
-     * @return
+     * @param temp temperature as double with possible decimals
+     * @return round value for temperature (integer)
      */
     public static String roundTheTemp(double temp) {
 
@@ -95,8 +112,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param temp
-     * @return
+     * @param temp temperature as double with possible 4 decimals
+     * @return temperature as double rounded to one decimal
      */
     public static String roundTheTempDecimal(double temp) {
 
@@ -105,8 +122,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param city
-     * @param context
+     * @param city city name
+     * @param context context to provide to editor
      */
     public static void saveTheCity(String city, Context context) {
 
@@ -120,8 +137,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param cityId
-     * @param context
+     * @param cityId city id
+     * @param context context to provide to editor
      */
     public static void saveTheCityId(Integer cityId, Context context) {
 
@@ -135,7 +152,7 @@ public class HelpStuff {
 
     /**
      *
-     * @param context
+     * @param context context to provide to editor
      */
     public static void removeTheCityId(Context context) {
 
@@ -149,8 +166,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param context
-     * @return
+     * @param context context to provide to shared pref
+     * @return saved current city id
      */
     static int retrieveSavedCityId(Context context) {
 
@@ -162,8 +179,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param context
-     * @return
+     * @param context context to provide to shared pref
+     * @return saved current city name
      */
     static String retrieveSavedCity(Context context) {
 
@@ -175,8 +192,8 @@ public class HelpStuff {
 
     /**
      *
-     * @param context
-     * @param location
+     * @param context context to provide to editor
+     * @param location geolocation
      */
     public static void saveLatAndLon(Context context, Location location) {
 
@@ -190,6 +207,11 @@ public class HelpStuff {
         editor.apply();
     }
 
+    /**
+     *
+     * @param context context to provide to shared pref
+     * @return lat & lon stored
+     */
     static String[] retrieveSavedCoords(Context context) {
 
         SharedPreferences sharedPref = context.getSharedPreferences(

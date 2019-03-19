@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2019 Slobodan Antonijević
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.slobodanantonijevic.simpleopenweather.general;
 
 import android.util.Log;
@@ -6,13 +22,16 @@ import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 
 import androidx.fragment.app.Fragment;
 
+/**
+ * Parent for our repos
+ */
 public class Repository {
 
     protected static final int CURRENT_WEATHER = 0;
     protected static final int DAILY_WEATHER = 1;
     protected static final int HOURLY_WEATHER = 2;
 
-    private static final int ABSOLUTE_DATA_EXPIRY = 15;// * 60; // 45 minutes, no need to update weather more often
+    private static final int ABSOLUTE_DATA_EXPIRY = 45 * 60; // 45 minutes, no need to update weather more often
 
     public OpenWeatherApi api;
 
@@ -45,8 +64,8 @@ public class Repository {
     }
 
     /**
-     *
-     * @param throwable
+     * Handle errors
+     * @param throwable throwable from rx
      */
     protected void handleRxError(Throwable throwable, int occurrence) {
 
@@ -57,8 +76,6 @@ public class Repository {
      *
      */
     protected void updateWeather() {
-
-        Log.wtf("REPO", "UPDATE FORECAST WEATHER");
 
         updateCallback.updateWeather();
     }
@@ -73,7 +90,7 @@ public class Repository {
 
     /**
      * Check if current data we've got is outdated per our criteria
-     * @return
+     * @return if the data has expired
      */
     public boolean isExpired(int lastDownloadTime) {
 

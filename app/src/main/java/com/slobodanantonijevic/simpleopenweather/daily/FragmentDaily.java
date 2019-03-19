@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2019 Slobodan Antonijević
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.slobodanantonijevic.simpleopenweather.daily;
 
 import android.annotation.SuppressLint;
@@ -25,7 +41,6 @@ import java.util.Objects;
 
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class FragmentDaily extends FragmentForecast {
 
@@ -42,7 +57,7 @@ public class FragmentDaily extends FragmentForecast {
     @BindView(R.id.maxTemp) CustomTextView maxTempField;
     @BindView(R.id.weatherIcon) AppCompatImageView weatherImage;
 
-
+    // ViewModels' data
     private CurrentViewModel currentViewModel;
     protected List<DayForecast> forecast = new ArrayList<>();
     private ForecastViewModel dailyViewModel;
@@ -93,23 +108,20 @@ public class FragmentDaily extends FragmentForecast {
     }
 
     /**
-     *
+     * Fetch and process current weather
      */
     private void findCurrentWeather() {
 
         if (currentViewModel.getCurrentWeather().getValue() != null) {
 
-            // save the new current city Id
-//            HelpStuff.saveTheCityId(currentViewModel.getCurrentWeather().getValue().getId(), Objects.requireNonNull(getContext()));
-
             displayCurrentWeather(currentViewModel.getCurrentWeather().getValue());
 
-            //HelpStuff.saveTheCityId(currentViewModel.getCurrentWeather().getValue().getId(), Objects.requireNonNull(getContext()));
+            HelpStuff.saveTheCityId(currentViewModel.getCurrentWeather().getValue().getId(), Objects.requireNonNull(getContext()));
         }
     }
 
     /**
-     *
+     * Fetch and process the next 6 days forecast
      */
     private void findForecast() {
 
@@ -120,8 +132,8 @@ public class FragmentDaily extends FragmentForecast {
     }
 
     /**
-     *
-     * @param weather
+     * Display the current weather data
+     * @param weather Current weather
      */
     @SuppressLint("SetTextI18n")
     private void displayCurrentWeather(CurrentWeather weather) {
@@ -153,8 +165,8 @@ public class FragmentDaily extends FragmentForecast {
     }
 
     /**
-     *
-     * @param forecastData
+     * Display the forecast for the next 6 days
+     * @param forecastData Forecast weather
      */
     private void displayForecast(Forecast forecastData) {
 
@@ -191,6 +203,10 @@ public class FragmentDaily extends FragmentForecast {
     public void onDestroy() {
         super.onDestroy();
 
+        /*
+         * We have to dispose the disposables held by the repos connected to ViewModels
+         * each time the fragment is gone
+         */
         currentViewModel.disposeDisposables();
         dailyViewModel.disposeDisposables();
     }

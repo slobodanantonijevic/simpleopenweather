@@ -1,9 +1,24 @@
+/*
+ * Copyright (C) 2019 Slobodan Antonijević
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.slobodanantonijevic.simpleopenweather.general;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,24 +42,24 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import dagger.android.support.AndroidSupportInjection;
-import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.HttpException;
 
 import static com.slobodanantonijevic.simpleopenweather.general.Repository.DAILY_WEATHER;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A custom fragment we want to extend our Fragments from, so that we reduce the code used in all
+ * of our fragments and limit it to one place
  */
 public class FragmentForecast extends Fragment implements Repository.LocationErrorInterface,
         Repository.UpdateWeatherInterface, Repository.UpdateForecastInterface {
 
     @Inject
-    public ViewModelProvider.Factory viewModelFactory;
+    protected ViewModelProvider.Factory viewModelFactory;
 
     protected static final String LAYOUT_KEY = "inflate_this_layout";
 
     // Butter Knife Unbinder
-    protected Unbinder unbinder;
+    private Unbinder unbinder;
 
     // Butter Knife
     @BindView(R.id.forecastHolder) protected RecyclerView forecastHolder;
@@ -56,20 +71,22 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
 
     private LocationInterface callback;
 
-
+    /**
+     * Interface to message Main Activity to take some action
+     */
     public interface LocationInterface {
 
         void locationError(String location);
     }
 
     public FragmentForecast() {
+
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
     }
 
@@ -128,7 +145,7 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
      * @param throwable
      */
     @SuppressLint("DefaultLocale")
-    protected void handleRxError(Throwable throwable, int occurrence) {
+    private void handleRxError(Throwable throwable, int occurrence) {
 
         // TODO: make some more meaningful error handling
         String message = "WEATHER: Something is not right buddy!"; // default

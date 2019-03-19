@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2019 Slobodan Antonijević
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.slobodanantonijevic.simpleopenweather;
 
 import android.Manifest;
@@ -92,8 +108,8 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
     }
 
     /**
-     * @param id
-     * @return
+     * @param id navigation item id
+     * @return fragment instance
      */
     private Fragment getFragmentInstance(int id) {
 
@@ -113,7 +129,7 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
     }
 
     /**
-     * @param id
+     * @param id navigation item id
      */
     private void loadTheFragment(int id) {
 
@@ -134,7 +150,7 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
     }
 
     /**
-     *
+     * Display the location search dialog to the user
      */
     private void popTheSearchDialog() {
 
@@ -152,11 +168,11 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
                 (dialog, which) -> {
 
                     HelpStuff.saveTheCity(cityField.getText().toString(), ActivityMain.this);
-                    // no id present will signal the fragment to fetch fresh data
+                    // No id present will signal the fragment to fetch fresh data
                     HelpStuff.removeTheCityId(ActivityMain.this);
 
+                    // We want to restart from basic page once we have the new city
                     navigation.setSelectedItemId(R.id.navigation_daily);
-//                    navigation.setSelectedItemId(currentFragmentId);
                     dialog.dismiss();
                 });
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, alertButtonLocationSearchAuto,
@@ -166,9 +182,11 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
                             Manifest.permission.ACCESS_COARSE_LOCATION)
                             != PackageManager.PERMISSION_GRANTED) {
 
-                        // Permission is not granted
-                        // There should be a handle for shouldShowRequestPermissionRationale here
-                        // in other words, if explanation is required, but we will simplify a bit
+                        /*
+                         *  Permission is not granted
+                         *  There should be a handle for shouldShowRequestPermissionRationale here
+                         *  in other words, if explanation is required, but we will simplify a bit
+                         */
                         ActivityCompat.requestPermissions(ActivityMain.this,
                                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                                 REQUEST_LOCATION_PERMISSION);
@@ -195,14 +213,12 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, alertButtonOk,
                     (dialog, which) -> {
 
-                        //popTheSearchDialog();
                         navigation.setSelectedItemId(R.id.navigation_search);
                         dialog.dismiss();
                     });
             alertDialog.show();
         } else {
 
-            //popTheSearchDialog();
             navigation.setSelectedItemId(R.id.navigation_search);
         }
     }
@@ -253,8 +269,8 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
 
     /**
      *
-     * @param savedState
-     * @return
+     * @param savedState onSaveInstanceState Bundle
+     * @return saved fragment or 0 if none saved
      */
     private int checkFragmentFromState(Bundle savedState) {
 
@@ -271,6 +287,9 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        /*
+         * Mainly saving to preserve the same selection after the configuration change
+         */
         outState.putInt(ACTIVE_FRAGMENT_KEY, currentFragmentId);
     }
 

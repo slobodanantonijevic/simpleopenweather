@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2019 Slobodan Antonijević
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.slobodanantonijevic.simpleopenweather.daily;
 
 import android.annotation.SuppressLint;
@@ -23,13 +39,13 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
     private List<DayForecast> forecast;
     private Context context;
 
-    public ForecastAdapter(List<DayForecast> forecast, Context context) {
+    ForecastAdapter(List<DayForecast> forecast, Context context) {
 
         this.forecast = forecast;
         this.context = context;
     }
 
-    public void update(List<DayForecast> forecast) {
+    void update(List<DayForecast> forecast) {
 
         this.forecast = forecast;
     }
@@ -79,7 +95,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
     /**
      * Generally it will always be 6, but just to be safe that it does not change on the API side
      * and caches us unprepared
-     * @return
+     * @return size of the items list
      */
     @Override
     public int getItemCount() {

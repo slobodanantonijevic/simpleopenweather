@@ -45,7 +45,7 @@ public class CurrentWeatherRepository extends Repository {
 
         this.context = fragment.getContext();
         disposable = new CompositeDisposable();
-        interfaceBuilder(fragment, false);
+        interfaceBuilder(fragment);
     }
 
     /**
@@ -130,10 +130,12 @@ public class CurrentWeatherRepository extends Repository {
                             String date = HelpStuff
                                     .time(currentWeather.getUnixDate(), "EEE, LLL dd");
                             currentWeather.setDate(date);
-                            HelpStuff.saveTheCityId(currentWeather.getId(), context);
+
                             data.setValue(currentWeather);
+
                             // We want to clear the tasks after this as there is no point in holding them anymore
                             disposable.clear();
+
                             updateWeather();
                             insertIntoDb();
                         },
@@ -146,7 +148,7 @@ public class CurrentWeatherRepository extends Repository {
      *
      * @return
      */
-    int lastUpdate() {
+    private int lastUpdate() {
 
         try {
 
@@ -158,12 +160,15 @@ public class CurrentWeatherRepository extends Repository {
     }
 
     @Override
-    protected void interfaceBuilder(Fragment context, Boolean shouldUseForecastCallback) {
-        super.interfaceBuilder(context, shouldUseForecastCallback);
+    protected void interfaceBuilder(Fragment fragment) {
+        super.interfaceBuilder(fragment);
 
-        updateCallback = (UpdateWeatherInterface) context;
+        updateCallback = (UpdateWeatherInterface) fragment;
     }
 
+    /**
+     *
+     */
     void dispose() {
 
         if (disposable != null && !disposable.isDisposed()) {

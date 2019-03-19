@@ -6,7 +6,6 @@ import com.slobodanantonijevic.simpleopenweather.general.Repository;
 import com.slobodanantonijevic.simpleopenweather.general.WeatherViewModel;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -33,8 +32,10 @@ public class HourlyViewModel extends WeatherViewModel {
     public void init(Fragment fragment, Integer locationId, String location, String lat, String lon) {
         super.init(fragment);
 
-        //weatherRepo.init();
-        if (hourlyForecast != null && !weatherRepo.isExpired(weatherRepo.lastUpdate())) {
+        weatherRepo.init(fragment);
+
+        if (hourlyForecast != null && !weatherRepo.isExpired(weatherRepo.lastUpdate())
+                && locationId != null && locationId == hourlyForecast.getValue().getId()) {
 
             // Data is here and still valid
             Log.wtf("HOURLY VM", "DATA HERE");
@@ -43,7 +44,7 @@ public class HourlyViewModel extends WeatherViewModel {
 
         Log.wtf("HOURLY VM LOCATION", location);
 
-        hourlyForecast = weatherRepo.getHourlyForecast(fragment, locationId, location, lat, lon);
+        hourlyForecast = weatherRepo.getHourlyForecast(locationId, location, lat, lon);
     }
 
     /**
@@ -64,14 +65,5 @@ public class HourlyViewModel extends WeatherViewModel {
     public void disposeDisposables() {
 
         weatherRepo.dispose();
-//        try {
-//
-//            viewModel.getRepo().dispose();
-//        } catch (NullPointerException npe) {
-//
-//            // We don't really have anything else to do here
-//            Log.wtf(viewModel.getClass().getName(), "REPO NULL");
-//            npe.printStackTrace();
-//
     }
 }

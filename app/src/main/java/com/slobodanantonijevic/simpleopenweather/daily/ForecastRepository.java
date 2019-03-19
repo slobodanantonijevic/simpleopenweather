@@ -42,7 +42,7 @@ public class ForecastRepository extends Repository {
     void init(Fragment fragment) {
 
         disposable = new CompositeDisposable();
-        interfaceBuilder(fragment, false);
+        interfaceBuilder(fragment);
     }
 
     /**
@@ -58,8 +58,6 @@ public class ForecastRepository extends Repository {
                                         String lat, String lon) {
 
         Log.wtf("FORECAST", "BUILD INTERFACE");
-        // We do not want a location error on this one as it will already be handled on current weather
-        interfaceBuilder(fragment, true);
 
         if (locationId != null) {
 
@@ -159,8 +157,8 @@ public class ForecastRepository extends Repository {
     }
 
     @Override
-    protected void interfaceBuilder(Fragment context, Boolean shouldUseForecastCallback) {
-        super.interfaceBuilder(context, shouldUseForecastCallback);
+    protected void interfaceBuilder(Fragment context) {
+        super.interfaceBuilder(context);
 
         updateForecastCallback = (UpdateForecastInterface) context;
     }

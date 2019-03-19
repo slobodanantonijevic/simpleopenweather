@@ -1,4 +1,5 @@
 package com.slobodanantonijevic.simpleopenweather.hourly;
+import android.content.Context;
 import android.util.Log;
 
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
@@ -31,6 +32,8 @@ public class HourlyRepository extends Repository {
 
     protected CompositeDisposable disposable = new CompositeDisposable();
 
+    private Context context;
+
     @Inject
     public HourlyRepository(OpenWeatherApi api, HourlyDao hourlyDao) {
 
@@ -40,16 +43,24 @@ public class HourlyRepository extends Repository {
 
     /**
      *
+     * @param fragment
+     */
+    void init(Fragment fragment) {
+
+        this.context = fragment.getContext();
+        disposable = new CompositeDisposable();
+        interfaceBuilder(fragment);
+    }
+
+    /**
+     *
      * @param location
      * @param lat
      * @param lon
      * @return
      */
-    LiveData<HourlyForecast> getHourlyForecast(Fragment fragment, Integer locationId, String location,
+    LiveData<HourlyForecast> getHourlyForecast(Integer locationId, String location,
                                                String lat, String lon) {
-
-        //this.context = fragment.getContext();
-        interfaceBuilder(fragment, false);
 
         if (locationId != null) {
 
@@ -82,19 +93,13 @@ public class HourlyRepository extends Repository {
                 .subscribe(hourlyForecast -> {
 
                     data.setValue(hourlyForecast);
-                    if (hourlyForecast == null || isExpired(lastUpdate())) {
-
-                        Log.wtf("HOURLY REPO", "DB DATA OUTDATED");
-                        refreshData(locationId, null, null, null);
-                    } else {
-
-                        Log.wtf("HOURLY REPO", "DB DATA");
-                        updateWeather();
-                    }
+                    updateWeather();
                 },
                 throwable -> handleRxError(throwable, CURRENT_WEATHER));
 
         disposable.add(hourlyDisposable);
+
+        refreshData(locationId, null, null, null);
     }
 
     /**
@@ -124,7 +129,12 @@ public class HourlyRepository extends Repository {
                             hourlyForecast.setLastUpdate(HelpStuff.currentTimestamp());
                             hourlyForecast.setId(hourlyForecast.getCity().getId());
 
+                            HelpStuff.saveTheCityId(hourlyForecast.getId(), context);
+
                             data.setValue(hourlyForecast);
+
+                            // We want to clear the tasks after this as there is no point in holding them anymore
+                            disposable.clear();
 
                             updateWeather();
                             insertIntoDb();
@@ -150,15 +160,15 @@ public class HourlyRepository extends Repository {
     }
 
     @Override
-    protected void interfaceBuilder(Fragment context, Boolean shouldUseForecastCallback) {
-        super.interfaceBuilder(context, shouldUseForecastCallback);
+    protected void interfaceBuilder(Fragment fragment) {
+        super.interfaceBuilder(fragment);
 
-        if (updateCallback == null) {
-
-            updateCallback = (UpdateWeatherInterface) context;
-        }
+        updateCallback = (UpdateWeatherInterface) fragment;
     }
 
+    /**
+     *
+     */
     void dispose() {
 
         if (disposable != null && !disposable.isDisposed()) {

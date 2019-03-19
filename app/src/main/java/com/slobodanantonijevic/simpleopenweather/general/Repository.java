@@ -5,7 +5,6 @@ import android.util.Log;
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 
 import androidx.fragment.app.Fragment;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class Repository {
 
@@ -16,9 +15,6 @@ public class Repository {
     private static final int ABSOLUTE_DATA_EXPIRY = 15;// * 60; // 45 minutes, no need to update weather more often
 
     public OpenWeatherApi api;
-    //public Context context;
-
-    protected CompositeDisposable disposable;
 
     private LocationErrorInterface locationCallback;
     protected UpdateWeatherInterface updateCallback;
@@ -48,11 +44,6 @@ public class Repository {
         void updateForecastWeather();
     }
 
-//    public void init() {
-//
-//        disposable = new CompositeDisposable();
-//    }
-
     /**
      *
      * @param throwable
@@ -67,6 +58,8 @@ public class Repository {
      */
     protected void updateWeather() {
 
+        Log.wtf("REPO", "UPDATE FORECAST WEATHER");
+
         updateCallback.updateWeather();
     }
 
@@ -75,7 +68,6 @@ public class Repository {
      */
     protected void updateForecastWeather() {
 
-        Log.wtf("REPO", "UPDATE FORECAST WEATHER");
         updateForecastCallback.updateForecastWeather();
     }
 
@@ -90,23 +82,9 @@ public class Repository {
     }
 
     /**
-     *
-     */
-//    void dispose() {
-//
-//        if (disposable != null && !disposable.isDisposed()) {
-//
-//            //disposable.dispose();
-//            disposable.clear();
-//        }
-//    }
-
-    /**
      * Prepare the callbacks
      */
-    protected void interfaceBuilder(Fragment context, Boolean shouldUseForecastCallback) {
-
-        Log.wtf("REPO", "BUILD INTERFACE");
+    protected void interfaceBuilder(Fragment context) {
 
         if (locationCallback == null) {
 

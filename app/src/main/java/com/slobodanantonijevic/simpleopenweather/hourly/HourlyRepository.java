@@ -6,6 +6,8 @@ import com.slobodanantonijevic.simpleopenweather.db.HourlyDao;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.general.Repository;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -16,6 +18,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -25,6 +28,8 @@ public class HourlyRepository extends Repository {
     private MutableLiveData<HourlyForecast> data = new MutableLiveData<>();
 
     private HourlyDao hourlyDao;
+
+    protected CompositeDisposable disposable = new CompositeDisposable();
 
     @Inject
     public HourlyRepository(OpenWeatherApi api, HourlyDao hourlyDao) {
@@ -43,14 +48,12 @@ public class HourlyRepository extends Repository {
     LiveData<HourlyForecast> getHourlyForecast(Fragment fragment, Integer locationId, String location,
                                                String lat, String lon) {
 
-        this.context = fragment.getContext();
-        interfaceBuilder(fragment);
+        //this.context = fragment.getContext();
+        interfaceBuilder(fragment, false);
 
         if (locationId != null) {
 
-            location = null; // ignore location name for API calls we already got id
-
-            if (data != null && !isExpired()) {
+            if (data != null && !isExpired(lastUpdate())) {
 
                     Log.wtf("HOURLY REPO", "OLD DATA");
                     return data;
@@ -73,27 +76,25 @@ public class HourlyRepository extends Repository {
     private void fetchFromDb(Integer locationId) {
 
         Log.wtf("HOURLY REPO", "TRYING THE DB DATA");
-        Disposable hourlyDb = hourlyDao.findById(locationId)
+        Disposable hourlyDisposable = hourlyDao.findById(locationId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(hourlyForecast -> {
 
                     data.setValue(hourlyForecast);
-                    if (hourlyForecast == null || isExpired()) {
+                    if (hourlyForecast == null || isExpired(lastUpdate())) {
 
                         Log.wtf("HOURLY REPO", "DB DATA OUTDATED");
                         refreshData(locationId, null, null, null);
                     } else {
 
-                        updateWeather();
                         Log.wtf("HOURLY REPO", "DB DATA");
+                        updateWeather();
                     }
-                }, throwable -> {
+                },
+                throwable -> handleRxError(throwable, CURRENT_WEATHER));
 
-                    Log.wtf("HOURLY REPO FETCH", throwable.getCause());
-                });
-
-        disposable.add(hourlyDb);
+        disposable.add(hourlyDisposable);
     }
 
     /**
@@ -124,7 +125,7 @@ public class HourlyRepository extends Repository {
                             hourlyForecast.setId(hourlyForecast.getCity().getId());
 
                             data.setValue(hourlyForecast);
-                            //
+
                             updateWeather();
                             insertIntoDb();
                         },
@@ -134,14 +135,23 @@ public class HourlyRepository extends Repository {
     }
 
     /**
-     * Prepare the callbacks
+     *
+     * @return
      */
-    private void interfaceBuilder(Fragment context) {
+    int lastUpdate() {
 
-        if (locationCallback == null) {
+        try {
 
-            locationCallback = (LocationErrorInterface) context;
+            return data.getValue().getLastUpdate();
+        } catch (NullPointerException npe) {
+
+            return 0;
         }
+    }
+
+    @Override
+    protected void interfaceBuilder(Fragment context, Boolean shouldUseForecastCallback) {
+        super.interfaceBuilder(context, shouldUseForecastCallback);
 
         if (updateCallback == null) {
 
@@ -149,21 +159,11 @@ public class HourlyRepository extends Repository {
         }
     }
 
-    /**
-     * Check if current data we've got is outdated per our criteria
-     * @return
-     */
-    boolean isExpired() {
+    void dispose() {
 
-        int lastDownloadTime = 0;
-        try {
+        if (disposable != null && !disposable.isDisposed()) {
 
-            lastDownloadTime = data.getValue().getLastUpdate();
-        } catch (NullPointerException npe) {
-
-            return true;
+            disposable.dispose();
         }
-        return lastDownloadTime + ABSOLUTE_DATA_EXPIRY < HelpStuff.currentTimestamp();
-
     }
 }

@@ -3,6 +3,8 @@ package com.slobodanantonijevic.simpleopenweather.di;
 import android.app.Application;
 
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
+import com.slobodanantonijevic.simpleopenweather.db.CurrentDao;
+import com.slobodanantonijevic.simpleopenweather.db.DailyDao;
 import com.slobodanantonijevic.simpleopenweather.db.HourlyDao;
 import com.slobodanantonijevic.simpleopenweather.db.WeatherDb;
 
@@ -18,6 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi.BASE_URL;
 import static com.slobodanantonijevic.simpleopenweather.db.WeatherDb.DB_NAME;
+import static com.slobodanantonijevic.simpleopenweather.db.WeatherDb.MIGRATION_1_2;
 
 @Module(includes = ViewModelModule.class)
 class AppModule {
@@ -38,7 +41,7 @@ class AppModule {
     @Provides
     WeatherDb provideDb(Application app) {
 
-        return Room.databaseBuilder(app, WeatherDb.class, DB_NAME).build();
+        return Room.databaseBuilder(app, WeatherDb.class, DB_NAME).addMigrations(MIGRATION_1_2).build();
     }
 
     @Singleton
@@ -46,5 +49,19 @@ class AppModule {
     HourlyDao provideHourlyDao(WeatherDb db) {
 
         return db.hourlyDao();
+    }
+
+    @Singleton
+    @Provides
+    CurrentDao provideCurrentDao(WeatherDb db) {
+
+        return db.currentDao();
+    }
+
+    @Singleton
+    @Provides
+    DailyDao provideDailyDao(WeatherDb db) {
+
+        return db.dailyDao();
     }
 }

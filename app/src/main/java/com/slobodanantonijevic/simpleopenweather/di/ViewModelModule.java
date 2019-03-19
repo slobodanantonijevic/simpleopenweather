@@ -1,5 +1,7 @@
 package com.slobodanantonijevic.simpleopenweather.di;
 
+import com.slobodanantonijevic.simpleopenweather.daily.CurrentViewModel;
+import com.slobodanantonijevic.simpleopenweather.daily.ForecastViewModel;
 import com.slobodanantonijevic.simpleopenweather.hourly.HourlyViewModel;
 
 import androidx.lifecycle.ViewModel;
@@ -20,5 +22,13 @@ public abstract class ViewModelModule {
     @ViewModelKey(HourlyViewModel.class)
     abstract ViewModel bindHourlyViewModel(HourlyViewModel hourlyViewModel);
 
-    //Others ViewModels
+    @Binds
+    @IntoMap
+    @ViewModelKey(CurrentViewModel.class)
+    abstract ViewModel bindCurrentViewModel(CurrentViewModel currentViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ForecastViewModel.class)
+    abstract ViewModel bindForecastViewModel(ForecastViewModel forecastViewModel);
 }

@@ -88,7 +88,7 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        loadTheFragment(currentFragmentId != 0 ? currentFragmentId : R.id.navigation_daily);
+        navigation.setSelectedItemId(currentFragmentId != 0 ? currentFragmentId : R.id.navigation_daily);
     }
 
     /**
@@ -194,13 +194,15 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, alertButtonOk,
                     (dialog, which) -> {
 
-                        popTheSearchDialog();
+                        //popTheSearchDialog();
+                        navigation.setSelectedItemId(R.id.navigation_search);
                         dialog.dismiss();
                     });
             alertDialog.show();
         } else {
 
-            popTheSearchDialog();
+            //popTheSearchDialog();
+            navigation.setSelectedItemId(R.id.navigation_search);
         }
     }
 

@@ -21,11 +21,11 @@ public class Wind {
         this.speed = speed;
     }
 
-    public double getDeg() {
+    public double getDirection() {
         return direction;
     }
 
-    public void setDeg(double direction) {
+    public void setDirection(double direction) {
         this.direction = direction;
     }
 }

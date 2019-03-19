@@ -11,40 +11,40 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
 import com.slobodanantonijevic.simpleopenweather.R;
-import com.slobodanantonijevic.simpleopenweather.daily.DayForecast;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.HttpException;
+
+import static com.slobodanantonijevic.simpleopenweather.general.Repository.DAILY_WEATHER;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentForecast extends Fragment implements Repository.LocationErrorInterface, Repository.UpdateWeatherInterface {
+public class FragmentForecast extends Fragment implements Repository.LocationErrorInterface,
+        Repository.UpdateWeatherInterface, Repository.UpdateForecastInterface {
 
-    protected static final int CURRENT_WEATHER = 0;
-    protected static final int DAILY_WEATHER = 1;
-    public static final int HOURLY_WEATHER = 2;
+    @Inject
+    public ViewModelProvider.Factory viewModelFactory;
 
     protected static final String LAYOUT_KEY = "inflate_this_layout";
 
     // Butter Knife Unbinder
     protected Unbinder unbinder;
-
-    // Forecast fields & values
-    protected List<DayForecast> forecast = new ArrayList<>();
 
     // Butter Knife
     @BindView(R.id.forecastHolder) protected RecyclerView forecastHolder;
@@ -54,17 +54,23 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
     protected String lat;
     protected String lon;
 
-    protected CompositeDisposable disposable = new CompositeDisposable();
-
     private LocationInterface callback;
+
 
     public interface LocationInterface {
 
-        public void locationError(String location);
+        void locationError(String location);
     }
 
     public FragmentForecast() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
@@ -86,6 +92,7 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        AndroidSupportInjection.inject(this); // Has to be done after the activity is created
         locationId = HelpStuff.retrieveSavedCityId(Objects.requireNonNull(getContext()));
         locationId = locationId < 0 ? null : locationId;
         location = HelpStuff.retrieveSavedCity(Objects.requireNonNull(getContext()));
@@ -129,7 +136,6 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
         if (throwable instanceof HttpException && occurrence != DAILY_WEATHER) {
 
             HttpException response = (HttpException) throwable;
-            Log.wtf("RETRO ERROR", response.response().raw().request().url().toString());
             int code = response.code();
 
             switch (code) {
@@ -157,11 +163,6 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
     public void onDestroy() {
         super.onDestroy();
 
-        if (disposable != null && !disposable.isDisposed()) {
-
-            disposable.dispose();
-        }
-
         if (unbinder != null) {
 
             unbinder.unbind();
@@ -175,5 +176,8 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
     }
 
     @Override
-    public void updateWeather() { }
+    public void updateWeather() {}
+
+    @Override
+    public void updateForecastWeather() {}
 }

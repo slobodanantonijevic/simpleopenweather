@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
-import com.slobodanantonijevic.simpleopenweather.db.CurrentDao;
+import com.slobodanantonijevic.simpleopenweather.db.DailyDao;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.general.Repository;
 
@@ -20,21 +20,19 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class CurrentWeatherRepository extends Repository {
+public class ForecastRepository extends Repository {
 
-    private MutableLiveData<CurrentWeather> data = new MutableLiveData<>();
+    MutableLiveData<Forecast> data = new MutableLiveData<>();
 
-    private CurrentDao currentDao;
+    private DailyDao dailyDao;
 
     private CompositeDisposable disposable;
 
-    private Context context;
-
     @Inject
-    CurrentWeatherRepository(OpenWeatherApi api, CurrentDao currentDao) {
+    ForecastRepository(OpenWeatherApi api, DailyDao dailyDao) {
 
         this.api = api;
-        this.currentDao = currentDao;
+        this.dailyDao = dailyDao;
     }
 
     /**
@@ -43,26 +41,31 @@ public class CurrentWeatherRepository extends Repository {
      */
     void init(Fragment fragment) {
 
-        this.context = fragment.getContext();
         disposable = new CompositeDisposable();
         interfaceBuilder(fragment, false);
     }
 
     /**
      *
+     * @param fragment
      * @param locationId
      * @param location
      * @param lat
      * @param lon
      * @return
      */
-    LiveData<CurrentWeather> getCurrentWeather(Integer locationId, String location,
-                                               String lat, String lon) {
+    LiveData<Forecast> getDailyForecast(Fragment fragment, Integer locationId, String location,
+                                        String lat, String lon) {
+
+        Log.wtf("FORECAST", "BUILD INTERFACE");
+        // We do not want a location error on this one as it will already be handled on current weather
+        interfaceBuilder(fragment, true);
 
         if (locationId != null) {
 
             if (data != null && !isExpired(lastUpdate())) {
 
+                Log.wtf("DAILY REPO", "OLD DATA");
                 return data;
             }
 
@@ -81,16 +84,17 @@ public class CurrentWeatherRepository extends Repository {
      */
     private void fetchFromDb(Integer locationId) {
 
-        Disposable currentDisposable = currentDao.findById(locationId)
+        Log.wtf("DAILY REPO", "TRYING THE DB DATA");
+        Disposable currentDisposable = dailyDao.findById(locationId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(currentWeather -> {
+                .subscribe(forecast -> {
 
-                            // If we have any data display it to the user before we fetch some fresh details
-                            data.setValue(currentWeather);
-                            updateWeather();
+                            data.setValue(forecast);
+
+                            updateForecastWeather();
                         },
-                        throwable -> handleRxError(throwable, CURRENT_WEATHER));
+                        throwable -> Log.wtf("DAILY REPO FETCH", throwable.getCause()));
 
         disposable.add(currentDisposable);
 
@@ -102,7 +106,8 @@ public class CurrentWeatherRepository extends Repository {
      */
     private void insertIntoDb() {
 
-        Completable.fromAction(() -> currentDao.insert(data.getValue()))
+        Log.wtf("DAILY REPO", "INSERTING THE DB DATA");
+        Completable.fromAction(() -> dailyDao.insert(data.getValue()))
                 .subscribeOn(Schedulers.io())
                 .subscribe();
     }
@@ -116,28 +121,24 @@ public class CurrentWeatherRepository extends Repository {
      */
     private void refreshData(Integer locationId, String location, String lat, String lon) {
 
+        Observable<Forecast> call = api.getForecast(locationId, location, lat, lon);
 
-        Observable<CurrentWeather> call = api.getCurrentWeather(locationId, location, lat, lon);
-
-        Log.wtf("CURRENT REPO", "FRESH DATA");
+        Log.wtf("DAILY REPO", "FRESH DATA");
 
         Disposable current = call
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(currentWeather -> {
+                .subscribe(forecast -> {
 
-                            currentWeather.setLastUpdate(HelpStuff.currentTimestamp());
-                            String date = HelpStuff
-                                    .time(currentWeather.getUnixDate(), "EEE, LLL dd");
-                            currentWeather.setDate(date);
-                            HelpStuff.saveTheCityId(currentWeather.getId(), context);
-                            data.setValue(currentWeather);
+                            forecast.setLastUpdate(HelpStuff.currentTimestamp());
+                            forecast.setId(forecast.getCity().getId());
+                            data.setValue(forecast);
                             // We want to clear the tasks after this as there is no point in holding them anymore
                             disposable.clear();
-                            updateWeather();
+                            updateForecastWeather();
                             insertIntoDb();
                         },
-                        throwable -> handleRxError(throwable, CURRENT_WEATHER));
+                        throwable -> handleRxError(throwable, DAILY_WEATHER));
 
         disposable.add(current);
     }
@@ -161,7 +162,7 @@ public class CurrentWeatherRepository extends Repository {
     protected void interfaceBuilder(Fragment context, Boolean shouldUseForecastCallback) {
         super.interfaceBuilder(context, shouldUseForecastCallback);
 
-        updateCallback = (UpdateWeatherInterface) context;
+        updateForecastCallback = (UpdateForecastInterface) context;
     }
 
     void dispose() {

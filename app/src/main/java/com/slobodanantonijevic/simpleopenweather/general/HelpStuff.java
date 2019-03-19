@@ -143,7 +143,7 @@ public class HelpStuff {
                 BASIC_CONFIG_FILE, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.remove(context.getString(R.string.location_id_key));
+        editor.putInt(context.getString(R.string.location_id_key), -1);
         editor.apply();
     }
 

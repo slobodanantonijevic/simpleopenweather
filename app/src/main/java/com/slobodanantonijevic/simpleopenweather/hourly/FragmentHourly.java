@@ -18,23 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
-import dagger.android.support.AndroidSupportInjection;
 
 /**
  * Even though it is rather similar logic to ForecastDaily we'll be keeping it separate
  * so we a complete freedom at updating it in the future.
  */
 public class FragmentHourly extends FragmentForecast {
-
-    @Inject
-    ViewModelProvider.Factory viewModelFactory;
 
     // Butter Knife
     @BindView(R.id.city) CustomTextView cityField;
@@ -77,8 +70,6 @@ public class FragmentHourly extends FragmentForecast {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        AndroidSupportInjection.inject(this); // Has to be done after the activity is created
 
         // Binding view model to activity rather than a fragment will always ensure for it to survive the orientation change
         viewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity()), viewModelFactory)

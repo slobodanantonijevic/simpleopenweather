@@ -7,7 +7,7 @@ public class MainWeatherData {
 
     @SerializedName("temp")
     @Expose
-    private double currentTemp;
+    private double temp;
 
     @SerializedName("pressure")
     @Expose
@@ -19,20 +19,20 @@ public class MainWeatherData {
 
     @SerializedName("temp_min")
     @Expose
-    private double minTemp;
+    private double tempMin;
 
     @SerializedName("temp_max")
     @Expose
-    private double maxTemp;
+    private double tempMax;
 
     public double getTemp() {
 
-        return currentTemp;
+        return temp;
     }
 
-    public void setTemp(double currentTemp) {
+    public void setTemp(double temp) {
 
-        this.currentTemp = currentTemp;
+        this.temp = temp;
     }
 
     public double getPressure() {
@@ -57,21 +57,21 @@ public class MainWeatherData {
 
     public double getTempMin() {
 
-        return minTemp;
+        return tempMin;
     }
 
-    public void setTempMin(double minTemp) {
+    public void setTempMin(double tempMin) {
 
-        this.minTemp = minTemp;
+        this.tempMin = tempMin;
     }
 
     public double getTempMax() {
 
-        return maxTemp;
+        return tempMax;
     }
 
-    public void setTempMax(double maxTemp) {
+    public void setTempMax(double tempMax) {
 
-        this.maxTemp = maxTemp;
+        this.tempMax = tempMax;
     }
 }

@@ -2,6 +2,7 @@ package com.slobodanantonijevic.simpleopenweather.hourly;
 
 import android.util.Log;
 
+import com.slobodanantonijevic.simpleopenweather.general.Repository;
 import com.slobodanantonijevic.simpleopenweather.general.WeatherViewModel;
 
 import javax.inject.Inject;
@@ -32,7 +33,8 @@ public class HourlyViewModel extends WeatherViewModel {
     public void init(Fragment fragment, Integer locationId, String location, String lat, String lon) {
         super.init(fragment);
 
-        if (this.hourlyForecast != null && !weatherRepo.isExpired()) {
+        //weatherRepo.init();
+        if (hourlyForecast != null && !weatherRepo.isExpired(weatherRepo.lastUpdate())) {
 
             // Data is here and still valid
             Log.wtf("HOURLY VM", "DATA HERE");
@@ -53,11 +55,23 @@ public class HourlyViewModel extends WeatherViewModel {
         return hourlyForecast;
     }
 
-    /**
-     *
-     */
-    void disposeDisposables() {
+    @Override
+    public Repository getRepo() {
+
+        return weatherRepo;
+    }
+
+    public void disposeDisposables() {
 
         weatherRepo.dispose();
+//        try {
+//
+//            viewModel.getRepo().dispose();
+//        } catch (NullPointerException npe) {
+//
+//            // We don't really have anything else to do here
+//            Log.wtf(viewModel.getClass().getName(), "REPO NULL");
+//            npe.printStackTrace();
+//
     }
 }

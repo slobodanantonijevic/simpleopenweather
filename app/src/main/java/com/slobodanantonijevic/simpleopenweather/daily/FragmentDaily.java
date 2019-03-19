@@ -14,22 +14,18 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
 import com.slobodanantonijevic.simpleopenweather.R;
-import com.slobodanantonijevic.simpleopenweather.api.OpenWeather;
-import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.general.Weather;
 import com.slobodanantonijevic.widget.CustomTextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class FragmentDaily extends FragmentForecast {
 
@@ -45,6 +41,11 @@ public class FragmentDaily extends FragmentForecast {
     @BindView(R.id.minTemp) CustomTextView minTempField;
     @BindView(R.id.maxTemp) CustomTextView maxTempField;
     @BindView(R.id.weatherIcon) AppCompatImageView weatherImage;
+
+
+    private CurrentViewModel currentViewModel;
+    protected List<DayForecast> forecast = new ArrayList<>();
+    private ForecastViewModel dailyViewModel;
 
     public FragmentDaily() {
 
@@ -68,8 +69,6 @@ public class FragmentDaily extends FragmentForecast {
         savedInstanceState.putInt(LAYOUT_KEY, R.layout.fragment_daily);
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
-        unbinder = ButterKnife.bind(this, rootView);
-
         forecastAdapter = new ForecastAdapter(forecast, getContext());
         forecastHolder.setAdapter(forecastAdapter);
 
@@ -80,6 +79,15 @@ public class FragmentDaily extends FragmentForecast {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // Binding view model to activity rather than a fragment will always ensure for it to survive the orientation change
+        currentViewModel = ViewModelProviders.of(getActivity(), viewModelFactory)
+                .get(CurrentViewModel.class);
+        currentViewModel.init(this, locationId, location, lat, lon);
+
+        dailyViewModel = ViewModelProviders.of(getActivity(), viewModelFactory)
+                .get(ForecastViewModel.class);
+        dailyViewModel.init(this, locationId, location, lat, lon);
+
         findCurrentWeather();
         findForecast();
     }
@@ -89,23 +97,15 @@ public class FragmentDaily extends FragmentForecast {
      */
     private void findCurrentWeather() {
 
-        OpenWeatherApi api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
+        if (currentViewModel.getCurrentWeather().getValue() != null) {
 
-        Observable<CurrentWeather> call = api.getCurrentWeather(locationId, location, lat, lon);
+            // save the new current city Id
+//            HelpStuff.saveTheCityId(currentViewModel.getCurrentWeather().getValue().getId(), Objects.requireNonNull(getContext()));
 
-        Disposable current = call
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(currentWeather -> {
+            displayCurrentWeather(currentViewModel.getCurrentWeather().getValue());
 
-                    String date = HelpStuff
-                            .time(currentWeather.getUnixDate(), "EEE, LLL dd");
-                    currentWeather.setDate(date);
-
-                    displayCurrentWeather(currentWeather);
-                }, throwable -> handleRxError(throwable, CURRENT_WEATHER));  // onError
-
-        disposable.add(current);
+            //HelpStuff.saveTheCityId(currentViewModel.getCurrentWeather().getValue().getId(), Objects.requireNonNull(getContext()));
+        }
     }
 
     /**
@@ -113,30 +113,10 @@ public class FragmentDaily extends FragmentForecast {
      */
     private void findForecast() {
 
-        OpenWeatherApi api = OpenWeather.getRetrofitInstance().create(OpenWeatherApi.class);
+        if (dailyViewModel.getDailyForecast().getValue() != null) {
 
-        Observable<Forecast> call = api.getForecast(locationId, location, lat, lon);
-
-        Disposable forecast = call
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(forecastWeather -> {
-
-                    int cityId = forecastWeather.getCity().getId();
-
-                    displayForecast(forecastWeather);
-                }, // simple method reference
-                        throwable -> handleRxError(throwable, DAILY_WEATHER)); // onError
-
-//                Subscribe could have been done with lambda too
-//                but no point to it as we only have a single method call
-//                and it is more elegant to use a simple method reference
-//                .subscribe(forecastWeather -> {
-//
-//                    displayForecast(forecastWeather);
-//                });
-
-        disposable.add(forecast);
+            displayForecast(dailyViewModel.getDailyForecast().getValue());
+        }
     }
 
     /**
@@ -191,5 +171,27 @@ public class FragmentDaily extends FragmentForecast {
          */
 
         // forecastAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateWeather() {
+
+        // For current weather
+        findCurrentWeather();
+    }
+
+    @Override
+    public void updateForecastWeather() {
+
+        // For daily forecast
+        findForecast();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        currentViewModel.disposeDisposables();
+        dailyViewModel.disposeDisposables();
     }
 }

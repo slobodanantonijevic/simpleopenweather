@@ -1,9 +1,9 @@
------------------------------------com.example.Clouds.java-----------------------------------
-
-package com.example;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+-----------------------------------com.example.Clouds.java-----------------------------------
+
+        package com.example;
 
 public class Clouds {
 

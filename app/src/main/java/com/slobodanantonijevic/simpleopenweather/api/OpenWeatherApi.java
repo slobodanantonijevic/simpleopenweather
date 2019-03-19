@@ -21,7 +21,6 @@ import com.slobodanantonijevic.simpleopenweather.daily.Forecast;
 import com.slobodanantonijevic.simpleopenweather.hourly.HourlyForecast;
 
 import io.reactivex.Observable;
-
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -29,7 +28,12 @@ public interface OpenWeatherApi {
 
     String BASE_URL = "https://api.openweathermap.org/";
 
-    String APP_ID = "60013a62362eda7bbbd86f0e0c56a79a";
+    /**
+     * This APP ID is bogey so you need to register on https://openweathermap.org
+     * for a free plan and get your own APP ID generated there in order for the code to work
+     */
+    String APP_ID = "8ihr52y434l8vhsu3s6d5tes0e9tpcds"; // Input your own APP ID here
+
     String CITY_ID = "id";
     String QUERY = "q";
     String LAT = "lat";

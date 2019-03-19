@@ -36,7 +36,7 @@ public class DataTypeConverter {
     private static Gson gson = new Gson();
 
     @TypeConverter
-    static List<HourForecast> stringToHourlyList(String data) {
+    public static List<HourForecast> stringToHourlyList(String data) {
 
         if (data == null) {
             return Collections.emptyList();
@@ -49,13 +49,13 @@ public class DataTypeConverter {
 
 
     @TypeConverter
-    static String hourlyListToString(List<HourForecast> list) {
+    public static String hourlyListToString(List<HourForecast> list) {
 
         return gson.toJson(list);
     }
 
     @TypeConverter
-    static List<Weather> stringToWeatherList (String data) {
+    public static List<Weather> stringToWeatherList (String data) {
 
         if (data == null) {
             return Collections.emptyList();
@@ -67,13 +67,13 @@ public class DataTypeConverter {
     }
 
     @TypeConverter
-    static String weatherListToString(List<Weather> list) {
+    public static String weatherListToString(List<Weather> list) {
 
         return gson.toJson(list);
     }
 
     @TypeConverter
-    static List<DayForecast> stringToDailyList (String data) {
+    public static List<DayForecast> stringToDailyList (String data) {
 
         if (data == null) {
             return Collections.emptyList();
@@ -85,7 +85,7 @@ public class DataTypeConverter {
     }
 
     @TypeConverter
-    static String dailyListToString(List<DayForecast> list) {
+    public static String dailyListToString(List<DayForecast> list) {
 
         return gson.toJson(list);
     }

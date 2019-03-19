@@ -16,8 +16,6 @@
 
 package com.slobodanantonijevic.simpleopenweather.daily;
 
-import android.util.Log;
-
 import com.slobodanantonijevic.simpleopenweather.general.WeatherViewModel;
 
 import javax.inject.Inject;

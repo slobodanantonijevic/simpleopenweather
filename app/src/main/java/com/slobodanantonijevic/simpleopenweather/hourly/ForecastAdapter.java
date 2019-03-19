@@ -17,11 +17,6 @@ package com.slobodanantonijevic.simpleopenweather.hourly;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +27,10 @@ import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.general.Weather;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
 

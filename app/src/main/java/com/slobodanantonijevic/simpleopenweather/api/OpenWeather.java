@@ -16,7 +16,7 @@
 
 package com.slobodanantonijevic.simpleopenweather.api;
 
-/**
+/*
  * A nearly perfect thread-safe singleton
  * At least I hope... :)
  */

@@ -17,6 +17,10 @@
 package com.slobodanantonijevic.simpleopenweather.general;
 
 import android.content.Context;
+import android.view.View;
+
+import com.slobodanantonijevic.simpleopenweather.R;
+import com.slobodanantonijevic.widget.CustomTextView;
 
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -24,11 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import android.view.View;
-
-import com.slobodanantonijevic.simpleopenweather.R;
-import com.slobodanantonijevic.widget.CustomTextView;
 
 /**
  * The view holder for RecyclerView cell

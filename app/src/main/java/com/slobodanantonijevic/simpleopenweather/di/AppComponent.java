@@ -19,7 +19,6 @@ package com.slobodanantonijevic.simpleopenweather.di;
 import android.app.Application;
 
 import com.slobodanantonijevic.simpleopenweather.App;
-import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 
 import javax.inject.Singleton;
 

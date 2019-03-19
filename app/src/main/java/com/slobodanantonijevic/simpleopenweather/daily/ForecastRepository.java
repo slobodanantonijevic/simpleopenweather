@@ -16,8 +16,6 @@
 
 package com.slobodanantonijevic.simpleopenweather.daily;
 
-import android.util.Log;
-
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 import com.slobodanantonijevic.simpleopenweather.db.DailyDao;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;

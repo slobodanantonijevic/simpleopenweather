@@ -18,13 +18,6 @@ package com.slobodanantonijevic.simpleopenweather.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.slobodanantonijevic.simpleopenweather.hourly.HourlyForecast;
-
-import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.PrimaryKey;
-
-import static androidx.room.ForeignKey.CASCADE;
 
 public class City {
 

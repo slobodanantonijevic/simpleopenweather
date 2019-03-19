@@ -93,10 +93,10 @@
         android:id="@+id/windIcon"
         android:layout_width="@dimen/other_conditions_icon_size"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/basic_margin"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/pressureIcon"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="@+id/currentTemperature"
-        app:layout_constraintTop_toBottomOf="@id/currentTemperature"
         app:srcCompat="@drawable/ic_wind" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -141,22 +141,20 @@
         android:id="@+id/pressureIcon"
         android:layout_width="@dimen/other_conditions_icon_size"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/basic_margin_double"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/humidityIcon"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="@+id/currentTemperature"
-        app:layout_constraintTop_toBottomOf="@+id/windIcon"
         app:srcCompat="@drawable/ic_pressure" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/humidityIcon"
         android:layout_width="@dimen/other_conditions_icon_size"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/basic_margin_double"
-        android:layout_marginBottom="@dimen/basic_margin_double"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="@+id/currentTemperature"
-        app:layout_constraintTop_toBottomOf="@+id/pressureIcon"
         app:srcCompat="@drawable/ic_humidity" />
 
     <com.slobodanantonijevic.widget.CustomTextView
@@ -218,11 +216,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/basic_margin"
         android:layout_marginLeft="@dimen/basic_margin"
-        android:layout_marginBottom="@dimen/basic_margin"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/other_conditions_text_size"
         app:fontTypeFaceAsset="Prime-Regular.otf"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/humidityIcon"
         app:layout_constraintStart_toEndOf="@+id/humidityIcon"
         app:layout_constraintTop_toTopOf="@+id/humidityIcon" />
 

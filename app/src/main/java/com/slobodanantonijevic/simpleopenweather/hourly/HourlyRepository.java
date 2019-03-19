@@ -15,15 +15,11 @@
  */
 
 package com.slobodanantonijevic.simpleopenweather.hourly;
-import android.content.Context;
-import android.util.Log;
 
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 import com.slobodanantonijevic.simpleopenweather.db.HourlyDao;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.general.Repository;
-
-import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,7 +29,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;

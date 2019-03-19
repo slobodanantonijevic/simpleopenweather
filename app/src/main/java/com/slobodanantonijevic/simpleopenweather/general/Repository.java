@@ -16,8 +16,6 @@
 
 package com.slobodanantonijevic.simpleopenweather.general;
 
-import android.util.Log;
-
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 
 import androidx.fragment.app.Fragment;

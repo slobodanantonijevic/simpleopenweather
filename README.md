@@ -28,7 +28,7 @@ The app uses free account of [OpenWeatherMap API](https://openweathermap.org/api
 
 ## Screenshots
 <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/gif_demo.gif" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086121.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086127.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086166.png" width="200"> 
-<img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086176.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086137.png" width="700">
+<img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086176.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086137.png" width="600">
 
 
 

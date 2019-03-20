@@ -3,9 +3,9 @@ Simple Weather App that I have built for the purpose of showing the junior devs 
 
 The app uses free account of [OpenWeatherMap API](https://openweathermap.org/api)
 
-The app is still a work in progress.
 
-![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg) ![api 16+](https://img.shields.io/badge/API-16%2B-green.svg)
+
+![Apache License](https://img.shields.io/hexpm/l/:packageName.svg) ![api 16+](https://img.shields.io/badge/API-16%2B-green.svg)
 
 ```
                                  Apache License

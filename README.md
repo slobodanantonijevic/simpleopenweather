@@ -5,7 +5,7 @@ The app uses free account of [OpenWeatherMap API](https://openweathermap.org/api
 
 
 
-![Apache License](https://img.shields.io/hexpm/l/:packageName.svg) ![api 16+](https://img.shields.io/badge/API-16%2B-green.svg)
+![Apache License](hhttps://img.shields.io/badge/license-Apache--2.0-blue.svg) ![api 16+](https://img.shields.io/badge/API-16%2B-green.svg)
 
 ```
                                  Apache License

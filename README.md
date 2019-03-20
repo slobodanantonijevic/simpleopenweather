@@ -3,7 +3,7 @@ Simple Weather App that I have built for the purpose of displaying to junior dev
 
 The app uses free account of [OpenWeatherMap API](https://openweathermap.org/api)
 
-![Apache License](https://img.shields.io/badge/license-Apache--2.0-blue.svg) ![api 16+](https://img.shields.io/badge/API-16%2B-green.svg) ![Tech used](https://img.shields.io/badge/tech-RxJava%20%7C%20Retrofit%20%7C%20Dagger%20%7C%20Butter%20Knife%20%7C%Architecture%20Components%20%7C%20AndroidX-red.svg)
+![Apache License](https://img.shields.io/badge/license-Apache--2.0-blue.svg) ![api 16+](https://img.shields.io/badge/API-16%2B-green.svg) ![Tech used](https://img.shields.io/badge/tech-ConstraintLayout%20%7C%20SVG%20%7C%20RxJava%20%7C%20Retrofit%20%7C%20Dagger%20%7C%20Butter%20Knife%20%7C%20Architecture%20Components%20%7C%20AndroidX-red.svg)
 
 ## Main technology used
 - **ConstraintLayout**: A layout that allows us to create large and complex layouts with a flat view hierarchy (no nested view groups). 

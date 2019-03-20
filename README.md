@@ -22,8 +22,11 @@ The app uses free account of [OpenWeatherMap API](https://openweathermap.org/api
 1. Introduce local junior devs to the latest trends in Android tech
 2. Introduce them to pretty much 'must-use' libraries such as Retrofit, Rx, Dagger etc.
 3. Discus the importance of embracing these technologies. Reducing boilerplate, introducing reactive patterns, and persisting the data with lowering the amount of bandwidth consumption.
-4. Display the examples how to combine the above mentioned technologies in a single app project
-5. Discus about further possible improvements that can be done 
+4. Show how to improve the UX feel with minor basic animations.
+5. Display the examples how to combine the above mentioned technologies in a single app project
+6. Discus about further possible improvements that can be done 
+
+## Screenshots
 
 
 

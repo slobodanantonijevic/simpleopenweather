@@ -46,7 +46,9 @@ public class CurrentViewModel extends WeatherViewModel {
 
         currentRepo.init(fragment);
 
-        if (currentWeather != null && !currentRepo.isExpired(currentWeather.getValue().getLastUpdate())
+
+        if (currentWeather != null && currentWeather.getValue() != null &&
+                !currentRepo.isExpired(currentWeather.getValue().getLastUpdate())
                 && locationId != null && locationId == currentWeather.getValue().getId()) {
 
             // Data is here and still valid
@@ -56,7 +58,7 @@ public class CurrentViewModel extends WeatherViewModel {
         currentWeather = currentRepo.getCurrentWeather(locationId, location, lat, lon);
     }
 
-    LiveData<CurrentWeather> getCurrentWeather() {
+    public LiveData<CurrentWeather> getCurrentWeather() {
 
         return currentWeather;
     }

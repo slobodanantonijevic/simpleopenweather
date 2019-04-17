@@ -21,6 +21,8 @@ import com.slobodanantonijevic.simpleopenweather.db.CurrentDao;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
 import com.slobodanantonijevic.simpleopenweather.general.Repository;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import androidx.fragment.app.Fragment;
@@ -28,7 +30,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -41,11 +43,16 @@ public class CurrentWeatherRepository extends Repository {
 
     private CompositeDisposable disposable;
 
+    private Scheduler processScheduler, androidScheduler;
+
     @Inject
-    public CurrentWeatherRepository(OpenWeatherApi api, CurrentDao currentDao) {
+    public CurrentWeatherRepository(OpenWeatherApi api, CurrentDao currentDao,
+                                    List<Scheduler> schedulers) {
 
         this.api = api;
         this.currentDao = currentDao;
+        this.processScheduler = schedulers.get(PROCESS_SCHEDULER);
+        this.androidScheduler = schedulers.get(ANDROID_SCHEDULER);
     }
 
     /**
@@ -66,7 +73,7 @@ public class CurrentWeatherRepository extends Repository {
      * @param lon city longitude
      * @return LiveData with CurrentWeather model
      */
-    LiveData<CurrentWeather> getCurrentWeather(Integer locationId, String location,
+    public LiveData<CurrentWeather> getCurrentWeather(Integer locationId, String location,
                                                String lat, String lon) {
 
         if (locationId != null) {
@@ -90,11 +97,11 @@ public class CurrentWeatherRepository extends Repository {
      * until we can present some fresh data to the user
      * @param locationId cityId as per OpenWeatherMap API
      */
-    private void fetchFromDb(Integer locationId) {
+    void fetchFromDb(Integer locationId) {
 
         Disposable currentDisposable = currentDao.findById(locationId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(processScheduler)//.subscribeOn(Schedulers.io())
+                .observeOn(androidScheduler)//.observeOn(AndroidSchedulers.mainThread())
                 .subscribe(currentWeather -> {
 
                             // If we have any data display it to the user before we fetch some fresh details
@@ -135,8 +142,8 @@ public class CurrentWeatherRepository extends Repository {
         Observable<CurrentWeather> call = api.getCurrentWeather(locationId, location, lat, lon);
 
         Disposable current = call
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(processScheduler)
+                .observeOn(androidScheduler)
                 .subscribe(currentWeather -> {
 
                             currentWeather.setLastUpdate(HelpStuff.currentTimestamp());

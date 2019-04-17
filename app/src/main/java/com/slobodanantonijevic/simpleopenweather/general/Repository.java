@@ -31,6 +31,9 @@ public class Repository {
 
     private static final int ABSOLUTE_DATA_EXPIRY = 45 * 60; // 45 minutes, no need to update weather more often
 
+    public static final int PROCESS_SCHEDULER = 0;
+    public static final int ANDROID_SCHEDULER = 1;
+
     public OpenWeatherApi api;
 
     private LocationErrorInterface locationCallback;
@@ -73,7 +76,7 @@ public class Repository {
     /**
      *
      */
-    protected void updateWeather() {
+    public void updateWeather() {
 
         updateCallback.updateWeather();
     }

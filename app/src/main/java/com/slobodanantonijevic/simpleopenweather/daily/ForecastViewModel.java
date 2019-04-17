@@ -45,7 +45,8 @@ public class ForecastViewModel extends WeatherViewModel {
         super.init(fragment);
 
         forecastRepo.init(fragment);
-        if (forecastWeather != null && !forecastRepo.isExpired(forecastWeather.getValue().getLastUpdate())
+        if (forecastWeather != null && forecastWeather.getValue() != null &&
+                !forecastRepo.isExpired(forecastWeather.getValue().getLastUpdate())
                 && locationId != null) {
 
             // Data is here and still valid

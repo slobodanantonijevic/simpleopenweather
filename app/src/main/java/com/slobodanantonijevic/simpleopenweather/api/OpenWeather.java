@@ -28,6 +28,8 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi.BASE_URL;
+
 /**
  * We'll deprecate this one as we used it before introduction of Dagger 2 DI
  */
@@ -40,8 +42,6 @@ public class OpenWeather {
 
     // Dummy object for synchronization
     private static final Object dummy = new Object();
-
-    private static final String BASE_URL = "https://api.openweathermap.org/";
 
     public static Retrofit getRetrofitInstance() {
 

@@ -26,11 +26,15 @@ The app uses free account of [OpenWeatherMap API](https://openweathermap.org/api
 5. Display the examples how to combine the above mentioned technologies in a single app project
 6. Discus about further possible improvements that can be done 
 
+## Important
+In order for the app to work you need to provide your own **APP ID** from https://openweathermap.org, in ```api/OpenWeatherApi.java```. A free plan will work with this app. 
+
 ## Screenshots
-<img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086121.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086127.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086166.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086176.png" width="200"> 
+<img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086121.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086127.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086166.png" width="200"> <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086176.png" width="200">
 <img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/Screenshot_1553086137.png" width="500">
 
-
+## Demo
+<img src="https://raw.githubusercontent.com/slobodanantonijevic/SimpleOpenWeather/master/screenshots/gif_demo.gif" width="200">
 
 ```
                                  Apache License

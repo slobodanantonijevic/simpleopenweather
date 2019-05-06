@@ -1,5 +1,7 @@
 package com.slobodanantonijevic.simpleopenweather.api;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
 import com.slobodanantonijevic.simpleopenweather.daily.CurrentWeather;
 import com.slobodanantonijevic.simpleopenweather.daily.DayForecast;
 import com.slobodanantonijevic.simpleopenweather.daily.Forecast;
@@ -24,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import io.reactivex.schedulers.Schedulers;
 import okio.BufferedSource;
 import okio.Okio;
@@ -58,7 +59,6 @@ public class OpenWeatherApiTest {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build()
                 .create(OpenWeatherApi.class);
-
     }
 
     @After

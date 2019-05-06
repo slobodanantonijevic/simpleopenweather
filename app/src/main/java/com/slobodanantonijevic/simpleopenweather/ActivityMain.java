@@ -16,7 +16,6 @@
 
 package com.slobodanantonijevic.simpleopenweather;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -24,6 +23,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -35,14 +41,6 @@ import com.slobodanantonijevic.simpleopenweather.hourly.FragmentHourly;
 
 import javax.inject.Inject;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,8 +66,7 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
     @BindView(R.id.navigation) BottomNavigationView navigation;
     @BindString(R.string.alert_title_location_search) String alertTitleLocationSearch;
     @BindString(R.string.alert_text_location_search) String alertTextLocationSearch;
-    @BindString(R.string.alert_button_location_search_manual) String alertButtonLocationSearchManual;
-    @BindString(R.string.alert_button_location_search_auto) String alertButtonLocationSearchAuto;
+    @BindString(R.string.alert_button_location_search) String alertButtonLocationSearchManual;
     @BindString(R.string.alert_title_location_error) String alertTitleLocationError;
     @BindString(R.string.alert_text_location_error) String alertTextLocationError;
     @BindString(R.string.alert_button_ok) String alertButtonOk;
@@ -172,28 +169,6 @@ public class ActivityMain extends AppCompatActivity implements FragmentForecast.
 
                     // We want to restart from basic page once we have the new city
                     navigation.setSelectedItemId(R.id.navigation_daily);
-                    dialog.dismiss();
-                });
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, alertButtonLocationSearchAuto,
-                (dialog, which) -> {
-
-                    if (ContextCompat.checkSelfPermission(ActivityMain.this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
-
-                        /*
-                         *  Permission is not granted
-                         *  There should be a handle for shouldShowRequestPermissionRationale here
-                         *  in other words, if explanation is required, but we will simplify a bit
-                         */
-                        ActivityCompat.requestPermissions(ActivityMain.this,
-                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                REQUEST_LOCATION_PERMISSION);
-                    } else {
-
-                        doTheGeoThingy();
-                    }
-
                     dialog.dismiss();
                 });
         alertDialog.show();

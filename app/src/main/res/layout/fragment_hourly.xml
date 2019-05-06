@@ -18,28 +18,26 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/city"/>
 
-    <com.slobodanantonijevic.widget.CustomTextView
+    <TextView
         android:id="@+id/city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/basic_margin"
         android:layout_marginLeft="@dimen/basic_margin"
         android:layout_marginTop="@dimen/basic_margin"
-        android:textColor="@color/colorPrimary"
         android:textSize="@dimen/date_text_size"
-        app:fontTypeFaceAsset="Prime-Regular.otf"
+        style="@style/GeneralTextStyle"
         app:layout_constraintStart_toStartOf="@id/topViewBackground"
         app:layout_constraintTop_toTopOf="@id/topViewBackground" />
 
-    <com.slobodanantonijevic.widget.CustomTextView
+    <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/basic_margin"
         android:layout_marginRight="@dimen/basic_margin"
-        android:textColor="@color/colorPrimary"
         android:textSize="@dimen/date_text_size"
-        app:fontTypeFaceAsset="Prime-Regular.otf"
+        style="@style/GeneralTextStyle"
         app:layout_constraintBottom_toBottomOf="@+id/city"
         app:layout_constraintEnd_toEndOf="@+id/topViewBackground"
         app:layout_constraintTop_toTopOf="@+id/city" />
@@ -51,6 +49,18 @@
         android:layout_marginBottom="@dimen/basic_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topViewBackground" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:srcCompat="@drawable/refresh_button"
+        android:id="@+id/refreshWeather"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/refresh_weather"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,12 +16,14 @@
 
 package com.slobodanantonijevic.simpleopenweather.db;
 
-import com.slobodanantonijevic.simpleopenweather.hourly.HourlyForecast;
-
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
-import io.reactivex.Observable;
+
+import com.slobodanantonijevic.simpleopenweather.hourly.HourlyForecast;
+
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
@@ -32,8 +34,8 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 public interface HourlyDao {
 
     @Insert(onConflict = REPLACE)
-    void insert(HourlyForecast hourly);
+    Completable insert(HourlyForecast hourlyForecast);
 
     @Query("SELECT * FROM hourlyforecast WHERE id = :id")
-    Observable<HourlyForecast> findById(int id);
+    Flowable<HourlyForecast> findById(int id);
 }

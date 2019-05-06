@@ -18,26 +18,34 @@ package com.slobodanantonijevic.simpleopenweather.hourly;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.slobodanantonijevic.simpleopenweather.R;
+import com.slobodanantonijevic.simpleopenweather.daily.FragmentDaily;
+import com.slobodanantonijevic.simpleopenweather.general.Animations;
 import com.slobodanantonijevic.simpleopenweather.general.City;
 import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
 import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
-import com.slobodanantonijevic.widget.CustomTextView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
+import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Even though it is rather similar logic to ForecastDaily we'll be keeping it separate
@@ -45,8 +53,11 @@ import butterknife.BindView;
  */
 public class FragmentHourly extends FragmentForecast {
 
+    private static final String TAG = FragmentDaily.class.getSimpleName();
+
     // Butter Knife
-    @BindView(R.id.city) CustomTextView cityField;
+    @BindView(R.id.refreshWeather) ImageButton refreshWeather;
+    @BindView(R.id.city) TextView cityField;
 
     // Forecast fields & values
     private List<HourForecast> forecast = new ArrayList<>();
@@ -57,8 +68,17 @@ public class FragmentHourly extends FragmentForecast {
         // Required empty public constructor
     }
 
+    /**
+     *
+     */
+    @OnClick(R.id.refreshWeather)
+    protected void refreshWeather() {
+
+        getFreshForecastWeather(locationId, location);
+    }
+
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
 
         super.onAttach(context);
     }
@@ -90,29 +110,86 @@ public class FragmentHourly extends FragmentForecast {
         // Binding view model to activity rather than a fragment will always ensure for it to survive the orientation change
         viewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity()), viewModelFactory)
                 .get(HourlyViewModel.class);
-        viewModel.init(this, locationId, location, lat, lon);
 
-        findForecast();
+        listenToHourlyForecast();
     }
 
     /**
-     * Fetch and process hourly forecast weather
+     *
+     * @param id
+     * @param name
      */
-    private void findForecast() {
+    private void getFreshForecastWeather(Integer id, String name) {
 
-        if (viewModel.getHourlyWeather().getValue() != null) {
+        Animations.rotate(getContext(), refreshWeather);
+        refreshWeather.setEnabled(false);
+        disposable.add(viewModel.getFreshWeather(id, name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        hourlyForecast -> {
 
-            // save the new current city Id
-            HelpStuff.saveTheCityId(viewModel.getHourlyWeather().getValue().getId(), getContext());
-            displayForecast(viewModel.getHourlyWeather().getValue());
-        }
+                            if (locationId == null) {
+
+                                locationId = hourlyForecast.getCity().getId();
+                                location = hourlyForecast.getCity().getName();
+
+                                HelpStuff.saveTheCityId(locationId, Objects.requireNonNull(getContext()));
+                            }
+
+                            hourlyForecast.setId(hourlyForecast.getCity().getId());
+
+                            listenToHourlyForecast();
+                            updateTheForecastWeather(hourlyForecast);
+
+                        },
+                        error -> handleRxError(error, DAILY_WEATHER)));
+    }
+
+    /**
+     *
+     */
+    private void listenToHourlyForecast() {
+
+        disposable.add(viewModel.hourlyForecast(locationId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        hourlyForecast -> {
+
+                            if (hourlyForecast != null) {
+
+                                updateTheHourlyWeatherUi(hourlyForecast);
+                            } else {
+
+                                getFreshForecastWeather(locationId, location);
+                            }
+                        },
+                        error -> handleRxError(error, HOURLY_WEATHER)));
+    }
+
+    /**
+     *
+     * @param forecast
+     */
+    private void updateTheForecastWeather(HourlyForecast forecast) {
+
+        disposable.add(viewModel.updateWeatherData(forecast)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        () -> {
+                            refreshWeather.clearAnimation();
+                            refreshWeather.setEnabled(true);
+                        },
+                        error -> Log.e(TAG, "Unable to update weather", error)));
     }
 
     /**
      * Display the hourly forecast for the next period
      * @param forecastData Hourly forecast weather
      */
-    private void displayForecast(HourlyForecast forecastData) {
+    private void updateTheHourlyWeatherUi(HourlyForecast forecastData) {
 
         try {
 
@@ -130,12 +207,6 @@ public class FragmentHourly extends FragmentForecast {
         }
     }
 
-    @Override
-    public void updateWeather() {
-
-        findForecast();
-    }
-
     /**
      *
      * @param city
@@ -143,16 +214,5 @@ public class FragmentHourly extends FragmentForecast {
     private void displayCity(String city) {
 
         cityField.setText(city);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        /*
-         * We have to dispose the disposables held by the repos connected to ViewModels
-         * each time the fragment is gone
-         */
-        viewModel.disposeDisposables();
     }
 }

@@ -16,12 +16,14 @@
 
 package com.slobodanantonijevic.simpleopenweather.db;
 
-import com.slobodanantonijevic.simpleopenweather.daily.CurrentWeather;
-
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
-import io.reactivex.Observable;
+
+import com.slobodanantonijevic.simpleopenweather.daily.CurrentWeather;
+
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
@@ -32,8 +34,8 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 public interface CurrentDao {
 
     @Insert(onConflict = REPLACE)
-    void insert(CurrentWeather currentWeather);
+    Completable insert(CurrentWeather currentWeather);
 
     @Query("SELECT * FROM currentweather WHERE id = :id")
-    Observable<CurrentWeather> findById(int id);
+    Flowable<CurrentWeather> findById(int id);
 }

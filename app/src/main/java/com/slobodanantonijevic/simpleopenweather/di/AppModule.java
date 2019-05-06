@@ -17,23 +17,18 @@ package com.slobodanantonijevic.simpleopenweather.di;
 
 import android.app.Application;
 
+import androidx.room.Room;
+
 import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
 import com.slobodanantonijevic.simpleopenweather.db.CurrentDao;
 import com.slobodanantonijevic.simpleopenweather.db.DailyDao;
 import com.slobodanantonijevic.simpleopenweather.db.HourlyDao;
 import com.slobodanantonijevic.simpleopenweather.db.WeatherDb;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.inject.Singleton;
 
-import androidx.room.Room;
 import dagger.Module;
 import dagger.Provides;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -59,12 +54,6 @@ class AppModule {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build()
                 .create(OpenWeatherApi.class);
-    }
-
-    @Provides
-    List<Scheduler> provideSchedulers() {
-
-        return new ArrayList<>(Arrays.asList(Schedulers.io(), AndroidSchedulers.mainThread()));
     }
 
     @Singleton

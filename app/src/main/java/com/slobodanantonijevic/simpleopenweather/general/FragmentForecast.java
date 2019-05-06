@@ -25,12 +25,6 @@ import android.view.ViewGroup;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
-import com.slobodanantonijevic.simpleopenweather.R;
-
-import java.util.Objects;
-
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -38,20 +32,29 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.slobodanantonijevic.simpleopenweather.R;
+
+import java.util.Objects;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import dagger.android.support.AndroidSupportInjection;
+import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.HttpException;
-
-import static com.slobodanantonijevic.simpleopenweather.general.Repository.DAILY_WEATHER;
 
 /**
  * A custom fragment we want to extend our Fragments from, so that we reduce the code used in all
  * of our fragments and limit it to one place
  */
-public class FragmentForecast extends Fragment implements Repository.LocationErrorInterface,
-        Repository.UpdateWeatherInterface, Repository.UpdateForecastInterface {
+public class FragmentForecast extends Fragment {
+
+    protected static final int CURRENT_WEATHER = 1;
+    protected static final int DAILY_WEATHER = 2;
+    public static final int HOURLY_WEATHER = 3;
 
     @Inject
     protected ViewModelProvider.Factory viewModelFactory;
@@ -64,12 +67,12 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
     // Butter Knife
     @BindView(R.id.forecastHolder) protected RecyclerView forecastHolder;
 
-    protected Integer locationId;
-    protected String location;
-    protected String lat;
-    protected String lon;
+    protected Integer locationId = null;
+    protected String location = null;
 
-    private LocationInterface callback;
+    protected CompositeDisposable disposable = new CompositeDisposable();
+
+    protected LocationInterface callback;
 
     /**
      * Interface to message Main Activity to take some action
@@ -111,21 +114,7 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
 
         AndroidSupportInjection.inject(this); // Has to be done after the activity is created
         locationId = HelpStuff.retrieveSavedCityId(Objects.requireNonNull(getContext()));
-        locationId = locationId < 0 ? null : locationId;
         location = HelpStuff.retrieveSavedCity(Objects.requireNonNull(getContext()));
-        if (location == null) {
-
-            String[] coords = HelpStuff.retrieveSavedCoords(getContext());
-            lat = coords[0];
-            lon = coords[1];
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-
-        callback = (LocationInterface) context;
-        super.onAttach(context);
     }
 
     /**
@@ -145,7 +134,7 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
      * @param throwable
      */
     @SuppressLint("DefaultLocale")
-    private void handleRxError(Throwable throwable, int occurrence) {
+    protected void handleRxError(Throwable throwable, int occurrence) {
 
         // TODO: make some more meaningful error handling
         String message = "WEATHER: Something is not right buddy!"; // default
@@ -174,7 +163,19 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
         }
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
 
+        callback = (LocationInterface) context;
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        disposable.clear();
+    }
 
     @Override
     public void onDestroy() {
@@ -184,17 +185,7 @@ public class FragmentForecast extends Fragment implements Repository.LocationErr
 
             unbinder.unbind();
         };
+
+        disposable.dispose();
     }
-
-    @Override
-    public void locationError(Throwable throwable, int occurrence) {
-
-        handleRxError(throwable, occurrence);
-    }
-
-    @Override
-    public void updateWeather() {}
-
-    @Override
-    public void updateForecastWeather() {}
 }

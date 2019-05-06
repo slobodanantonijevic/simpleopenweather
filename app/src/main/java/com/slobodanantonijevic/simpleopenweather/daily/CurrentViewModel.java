@@ -16,58 +16,61 @@
 
 package com.slobodanantonijevic.simpleopenweather.daily;
 
+import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
+import com.slobodanantonijevic.simpleopenweather.db.CurrentDao;
 import com.slobodanantonijevic.simpleopenweather.general.WeatherViewModel;
 
 import javax.inject.Inject;
 
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public class CurrentViewModel extends WeatherViewModel {
 
-    private LiveData<CurrentWeather> currentWeather;
-    private CurrentWeatherRepository currentRepo;
+    private CurrentDao currentWeatherDao;
 
     @Inject
-    CurrentViewModel(CurrentWeatherRepository currentRepo) {
+    CurrentViewModel(OpenWeatherApi api, CurrentDao currentWeatherDao) {
 
-        this.currentRepo = currentRepo;
+        this.api = api;
+        this.currentWeatherDao = currentWeatherDao;
     }
 
     /**
-     * @param fragment Fragment instance to bind the interface callbacks and context to
-     * @param locationId cityId as per OpenWeatherMap API
-     * @param location city name
-     * @param lat city latitude
-     * @param lon city longitude
+     * Get the last stored weather data
+     * @param cityId to fetch the last data we have stored
+     *
+     * @return  a [Flowable] that emits every time the data has been updated
      */
-    public void init(Fragment fragment, Integer locationId, String location, String lat, String lon) {
-        super.init(fragment);
+    public Flowable<CurrentWeather> currentWeather(Integer cityId) {
 
-        currentRepo.init(fragment);
-
-
-        if (currentWeather != null && currentWeather.getValue() != null &&
-                !currentRepo.isExpired(currentWeather.getValue().getLastUpdate())
-                && locationId != null && locationId == currentWeather.getValue().getId()) {
-
-            // Data is here and still valid
-            return;
-        }
-
-        currentWeather = currentRepo.getCurrentWeather(locationId, location, lat, lon);
-    }
-
-    public LiveData<CurrentWeather> getCurrentWeather() {
-
-        return currentWeather;
+        return currentWeatherDao.findById(cityId);
     }
 
     /**
-     *  Dispose the disposables held by the repo
+     *
+     * Search for the fresh data from the API, at least one of the params should be provided.
+     * It is best practice to provide just one as providing both not null can lead to conflict on API side
+     *
+     * @param cityId to search for, can be null
+     * @param cityName to search for, can be null
+     *
+     * @return a [Single] containing the fresh weather
      */
-    void disposeDisposables() {
+    public Single<CurrentWeather> getFreshWeather(Integer cityId, String cityName) {
 
-        currentRepo.dispose();
+        return api.getCurrentWeather(cityId, cityName);
+    }
+
+    /**
+     * Update current weather data in the local db
+     * @param weather Fresh current weather
+     *
+     * @return a [Completable] that completes when the new weather has been stored
+     */
+    public Completable updateWeatherData(CurrentWeather weather) {
+
+        return currentWeatherDao.insert(weather);
     }
 }

@@ -18,13 +18,14 @@ package com.slobodanantonijevic.simpleopenweather.general;
 
 import android.content.Context;
 import android.view.View;
-
-import com.slobodanantonijevic.simpleopenweather.R;
-import com.slobodanantonijevic.widget.CustomTextView;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.slobodanantonijevic.simpleopenweather.R;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -37,18 +38,18 @@ public class ForecastViewHolder extends RecyclerView.ViewHolder {
     private Context context;
 
     // Butter Knife
-    @BindView(R.id.day) public CustomTextView day;
-    @BindView(R.id.date) public CustomTextView date;
-    @BindView(R.id.temp) public CustomTextView temp;
+    @BindView(R.id.day) public TextView day;
+    @BindView(R.id.date) public TextView date;
+    @BindView(R.id.temp) public TextView temp;
     @BindView(R.id.weatherIcon) public AppCompatImageView icon;
 
     @BindView(R.id.additionalData) ConstraintLayout additionalData;
 
-    @BindView(R.id.minTemp) public CustomTextView minTemp;
-    @BindView(R.id.maxTemp) public CustomTextView maxTemp;
-    @BindView(R.id.wind) public CustomTextView wind;
-    @BindView(R.id.humidity) public CustomTextView humidity;
-    @BindView(R.id.pressure) public CustomTextView pressure;
+    @BindView(R.id.minTemp) public TextView minTemp;
+    @BindView(R.id.maxTemp) public TextView maxTemp;
+    @BindView(R.id.wind) public TextView wind;
+    @BindView(R.id.humidity) public TextView humidity;
+    @BindView(R.id.pressure) public TextView pressure;
 
     private boolean isExpanded = false;
 

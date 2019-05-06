@@ -16,57 +16,61 @@
 
 package com.slobodanantonijevic.simpleopenweather.hourly;
 
+import com.slobodanantonijevic.simpleopenweather.api.OpenWeatherApi;
+import com.slobodanantonijevic.simpleopenweather.db.HourlyDao;
 import com.slobodanantonijevic.simpleopenweather.general.WeatherViewModel;
 
 import javax.inject.Inject;
 
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public class HourlyViewModel extends WeatherViewModel {
 
-    private LiveData<HourlyForecast> hourlyForecast;
-    private HourlyRepository weatherRepo;
+    private HourlyDao hourlyDao;
 
     @Inject
-    HourlyViewModel(HourlyRepository weatherRepo) {
+    HourlyViewModel(OpenWeatherApi api, HourlyDao hourlyDao) {
 
-        this.weatherRepo = weatherRepo;
+        this.api = api;
+        this.hourlyDao = hourlyDao;
+    }
+
+    /**
+     * Get the last stored weather data
+     * @param cityId to fetch the last data we have stored
+     *
+     * @return  a [Flowable] that emits every time the data has been updated
+     */
+    public Flowable<HourlyForecast> hourlyForecast(Integer cityId) {
+
+        return hourlyDao.findById(cityId);
     }
 
     /**
      *
-     * @param fragment Fragment instance to bind the interface callbacks and context to
-     * @param locationId cityId as per OpenWeatherMap API
-     * @param location city name
-     * @param lat city latitude
-     * @param lon city longitude
+     * Search for the fresh data from the API, at least one of the params should be provided.
+     * It is best practice to provide just one as providing both not null can lead to conflict on API side
+     *
+     * @param cityId to search for, can be null
+     * @param cityName to search for, can be null
+     *
+     * @return a [Single] containing the fresh weather
      */
-    public void init(Fragment fragment, Integer locationId, String location, String lat, String lon) {
-        super.init(fragment);
+    public Single<HourlyForecast> getFreshWeather(Integer cityId, String cityName) {
 
-        weatherRepo.init(fragment);
-
-        if (hourlyForecast != null && !weatherRepo.isExpired(weatherRepo.lastUpdate())
-                && locationId != null && locationId == hourlyForecast.getValue().getId()) {
-
-            // Data is here and still valid
-            return;
-        }
-
-        hourlyForecast = weatherRepo.getHourlyForecast(locationId, location, lat, lon);
-    }
-
-    LiveData<HourlyForecast> getHourlyWeather() {
-
-        return hourlyForecast;
+        return api.getHourlyForecast(cityId, cityName);
     }
 
     /**
-     *  Dispose the disposables held by the repo
+     * Update hourly weather data in the local db
+     * @param weather Fresh current weather
+     *
+     * @return a [Completable] that completes when the new weather has been stored
      */
-    void disposeDisposables() {
+    public Completable updateWeatherData(HourlyForecast weather) {
 
-        weatherRepo.dispose();
+        return hourlyDao.insert(weather);
     }
 }

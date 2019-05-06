@@ -18,42 +18,52 @@ package com.slobodanantonijevic.simpleopenweather.daily;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
-
-import com.slobodanantonijevic.simpleopenweather.R;
-import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
-import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
-import com.slobodanantonijevic.simpleopenweather.general.Weather;
-import com.slobodanantonijevic.widget.CustomTextView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.slobodanantonijevic.simpleopenweather.R;
+import com.slobodanantonijevic.simpleopenweather.general.Animations;
+import com.slobodanantonijevic.simpleopenweather.general.FragmentForecast;
+import com.slobodanantonijevic.simpleopenweather.general.HelpStuff;
+import com.slobodanantonijevic.simpleopenweather.general.Weather;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import butterknife.BindView;
+import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class FragmentDaily extends FragmentForecast {
+
+    private static final String TAG = FragmentDaily.class.getSimpleName();
 
     private ForecastAdapter forecastAdapter;
 
     // Butter Knife
-    @BindView(R.id.date) CustomTextView dateField;
-    @BindView(R.id.city) CustomTextView cityField;
-    @BindView(R.id.currentTemperature) CustomTextView temperatureField;
-    @BindView(R.id.pressure) CustomTextView pressureField;
-    @BindView(R.id.humidity) CustomTextView humidityField;
-    @BindView(R.id.wind) CustomTextView windField;
-    @BindView(R.id.minTemp) CustomTextView minTempField;
-    @BindView(R.id.maxTemp) CustomTextView maxTempField;
+    @BindView(R.id.refreshWeather) ImageButton refreshWeather;
+    @BindView(R.id.date) TextView dateField;
+    @BindView(R.id.city) TextView cityField;
+    @BindView(R.id.currentTemperature) TextView temperatureField;
+    @BindView(R.id.pressure) TextView pressureField;
+    @BindView(R.id.humidity) TextView humidityField;
+    @BindView(R.id.wind) TextView windField;
+    @BindView(R.id.minTemp) TextView minTempField;
+    @BindView(R.id.maxTemp) TextView maxTempField;
     @BindView(R.id.weatherIcon) AppCompatImageView weatherImage;
 
     // ViewModels' data
@@ -64,6 +74,16 @@ public class FragmentDaily extends FragmentForecast {
     public FragmentDaily() {
 
         // Required empty public constructor
+    }
+
+    /**
+     *
+     */
+    @OnClick(R.id.refreshWeather)
+    protected void refreshWeather() {
+
+        getFreshCurrentWeather(locationId, location);
+        getFreshForecastWeather(locationId, location);
     }
 
     @Override
@@ -96,38 +116,148 @@ public class FragmentDaily extends FragmentForecast {
         // Binding view model to activity rather than a fragment will always ensure for it to survive the orientation change
         currentViewModel = ViewModelProviders.of(getActivity(), viewModelFactory)
                 .get(CurrentViewModel.class);
-        currentViewModel.init(this, locationId, location, lat, lon);
 
         dailyViewModel = ViewModelProviders.of(getActivity(), viewModelFactory)
                 .get(ForecastViewModel.class);
-        dailyViewModel.init(this, locationId, location, lat, lon);
 
-        findCurrentWeather();
-        findForecast();
-    }
+        listenToCurrentWeather();
+        listenToForecast();
 
-    /**
-     * Fetch and process current weather
-     */
-    private void findCurrentWeather() {
+        if (locationId == null || locationId < -1) {
 
-        if (currentViewModel.getCurrentWeather().getValue() != null) {
-
-            displayCurrentWeather(currentViewModel.getCurrentWeather().getValue());
-
-            HelpStuff.saveTheCityId(currentViewModel.getCurrentWeather().getValue().getId(), Objects.requireNonNull(getContext()));
+            getFreshCurrentWeather(locationId, location);
+            getFreshForecastWeather(locationId, location);
         }
     }
 
     /**
-     * Fetch and process the next 6 days forecast
+     *
+     * @param id
+     * @param name
      */
-    private void findForecast() {
+    private void getFreshCurrentWeather(Integer id, String name) {
 
-        if (dailyViewModel.getDailyForecast().getValue() != null) {
+        Animations.rotate(getContext(), refreshWeather);
+        refreshWeather.setEnabled(false);
+        disposable.add(currentViewModel.getFreshWeather(id, name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        currentWeather -> {
 
-            displayForecast(dailyViewModel.getDailyForecast().getValue());
-        }
+                            // This (locationId == null) means we have the new city and need new disposables
+                            if (locationId == null) {
+
+                                locationId = currentWeather.getId();
+                                location = currentWeather.getCityName();
+
+                                HelpStuff.saveTheCityId(locationId, Objects.requireNonNull(getContext()));
+                            }
+                            listenToCurrentWeather();
+                            updateTheCurrentWeather(currentWeather);
+
+                        },
+                        error -> handleRxError(error, CURRENT_WEATHER) ));
+    }
+
+    /**
+     *
+     */
+    private void getFreshForecastWeather(Integer id, String name) {
+
+        disposable.add(dailyViewModel.getFreshWeather(id, name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        forecastWeather -> {
+
+                            if (locationId == null) {
+
+                                locationId = forecastWeather.getCity().getId();
+                                location = forecastWeather.getCity().getName();
+
+                                HelpStuff.saveTheCityId(locationId, Objects.requireNonNull(getContext()));
+                            }
+
+                            forecastWeather.setId(forecastWeather.getCity().getId());
+
+                            listenToForecast();
+                            updateTheForecastWeather(forecastWeather);
+
+                        },
+                        error -> handleRxError(error, DAILY_WEATHER)));
+    }
+
+    /**
+     *
+     */
+    private void listenToCurrentWeather() {
+
+        disposable.add(currentViewModel.currentWeather(locationId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        currentWeather -> {
+
+                            if (currentWeather != null) {
+
+                                updateTheCurrentWeatherUi(currentWeather);
+                            } else {
+
+                                callback.locationError(location);
+                            }
+                        },
+                        error -> handleRxError(error, CURRENT_WEATHER)));
+    }
+
+    /**
+     *
+     */
+    private void listenToForecast() {
+
+        disposable.add(dailyViewModel.dailyForecast(locationId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        forecastWeather -> {
+
+                            if (forecastWeather != null) {
+
+                                updateTheForecastWeatherUi(forecastWeather);
+                            }
+                        },
+                        error -> handleRxError(error, DAILY_WEATHER)));
+    }
+
+    /**
+     *
+     * @param weather
+     */
+    private void updateTheCurrentWeather(CurrentWeather weather) {
+
+        disposable.add(currentViewModel.updateWeatherData(weather)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        () -> {
+                                refreshWeather.clearAnimation();
+                                refreshWeather.setEnabled(true);
+                        },
+                        error -> Log.e(TAG, "Unable to update weather", error)));
+    }
+
+    /**
+     *
+     * @param forecast
+     */
+    private void updateTheForecastWeather(Forecast forecast) {
+
+        disposable.add(dailyViewModel.updateWeatherData(forecast)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        () -> { },
+                        error -> Log.e(TAG, "Unable to update weather", error)));
     }
 
     /**
@@ -135,7 +265,7 @@ public class FragmentDaily extends FragmentForecast {
      * @param weather Current weather
      */
     @SuppressLint("SetTextI18n")
-    private void displayCurrentWeather(CurrentWeather weather) {
+    private void updateTheCurrentWeatherUi(CurrentWeather weather) {
 
         dateField.setText(weather.getDate());
 
@@ -167,7 +297,7 @@ public class FragmentDaily extends FragmentForecast {
      * Display the forecast for the next 6 days
      * @param forecastData Forecast weather
      */
-    private void displayForecast(Forecast forecastData) {
+    private void updateTheForecastWeatherUi(Forecast forecastData) {
 
         forecast = forecastData.getDaysForecast();
         forecastAdapter.update(this.forecast);
@@ -182,31 +312,5 @@ public class FragmentDaily extends FragmentForecast {
          */
 
         // forecastAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void updateWeather() {
-
-        // For current weather
-        findCurrentWeather();
-    }
-
-    @Override
-    public void updateForecastWeather() {
-
-        // For daily forecast
-        findForecast();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        /*
-         * We have to dispose the disposables held by the repos connected to ViewModels
-         * each time the fragment is gone
-         */
-        currentViewModel.disposeDisposables();
-        dailyViewModel.disposeDisposables();
     }
 }

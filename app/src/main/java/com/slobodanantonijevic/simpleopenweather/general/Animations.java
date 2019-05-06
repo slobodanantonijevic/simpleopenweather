@@ -26,7 +26,7 @@ import com.slobodanantonijevic.simpleopenweather.R;
 /**
  * A class to build our basic animations into
  */
-class Animations {
+public class Animations {
 
     /**
      * Simple expand animation
@@ -102,5 +102,21 @@ class Animations {
                 v.setVisibility(View.GONE);
             }
         });
+    }
+
+    public static void rotate(Context ctx, View v) {
+
+        Animation a = AnimationUtils.loadAnimation(ctx, R.anim.item_anim_rotation);
+        if (a != null) {
+
+            a.reset();
+            a.setRepeatCount(Animation.INFINITE);
+            a.setRepeatMode(Animation.INFINITE);
+            if (v != null) {
+
+                v.clearAnimation();
+                v.startAnimation(a);
+            }
+        }
     }
 }
